@@ -1,0 +1,36 @@
+Mona Miner Public v1 — SM120 source notice
+
+Mona Miner is a modified derivative of tpruvot/ccminer.
+
+The pinned upstream source subset is based on the supplied historical
+tpruvot/ccminer Windows snapshot identified by upstream revision
+6ff4e50987e59a70056324a94ed8667cc0bf598d.
+
+The aggregate LICENSE.txt (GPLv3 text plus Apache License 2.0 text) is preserved.
+Per-file notices, including sphlib/SAPHIR, Jansson, Lyra PHC team, CUDA extract
+authors and applicable NVIDIA notices, remain in their source files. Names,
+attribution emails and license/project URLs in those notices are provenance and
+must not be stripped. This notice does not relicense third-party components.
+
+The generator scripts and exact source blobs retained for the generated CUDA
+headers are included. Corresponding-source redistribution should retain these
+inputs, build instructions, modifications and applicable notices. System and
+toolchain dependencies are not bundled in this repository.
+
+Public v1 Stage 2 source modification (2026-09-19):
+source/phasec-host/src/main.cpp changes one obsolete private-build diagnostic to
+Mona Miner branding. No parsing, mining, target, Stratum or protected performance
+source was changed by that Stage 2 branding edit.
+
+The SM120 Public v1 executable qualified on RTX 5090 has SHA256:
+
+00D42BD105974F90613CA8268827B69E3369926A8DFE2BEB236A762260D36CB1
+
+Physical qualification was completed on Windows 11 x64 / NVIDIA GeForce RTX 5090.
+Other RTX 50-series SKUs are not claimed as physically validated by that test.
+
+Historical embedded backend identities present in source metadata describe prior
+source snapshots and are not by themselves certificates of the published binary.
+
+Jansson 2.6 MIT license text is in licenses/JANSSON_LICENSE.txt.
+Original per-file copyright notices remain unchanged.

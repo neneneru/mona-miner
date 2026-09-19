@@ -1,0 +1,33 @@
+# Build output
+**/out/
+**/build/
+**/cmake-build-*/
+
+# CMake / Ninja
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Testing/
+build.ninja
+.ninja_*
+compile_commands.json
+cmake_install.cmake
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Python
+__pycache__/
+*.pyc
+
+# Private qualification / evidence
+private-qualification/
+evidence/
+*.zip
+*.7z
+*.log
+
+# Local launch copies / credentials
+start_vippool.local.bat

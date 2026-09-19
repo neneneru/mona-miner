@@ -1,0 +1,342 @@
+{
+  "schema": "mona.public-source-scope.v1",
+  "architecture": "sm120",
+  "accepted_stage1b_result_sha256": "0CE4E870D0747AFB55431254CCC7BFDAAC740E684C4E76DB9C0F9109808F7824",
+  "recipe": "source/CMakeLists.txt",
+  "retained_baseline_files": 80,
+  "runtime_source_changes": [
+    {
+      "path": "source/phasec-host/src/main.cpp",
+      "kind": "single diagnostic literal only"
+    }
+  ],
+  "historical_identity_not_new_certification": true,
+  "retained_files": {
+    "source/CMakeLists.txt": [
+      "configured integration build recipe, byte-preserved"
+    ],
+    "source/certified-backend/CMakeLists.txt": [
+      "preferred-source generation / build-identity input (standalone CMake is not invoked)"
+    ],
+    "source/certified-backend/generated/UPSTREAM_LICENSE.txt": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate"
+    ],
+    "source/certified-backend/generated/cuda_helper.h": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/generated/cuda_lyra2_vectors.h",
+      "transitive configured local include from source/certified-backend/generated/upstream_bmw.cuh",
+      "transitive configured local include from source/certified-backend/generated/upstream_skein.cuh",
+      "transitive configured local include from source/certified-backend/generated/upstream_blake.cuh",
+      "transitive configured local include from source/certified-backend/generated/upstream_cube.cuh"
+    ],
+    "source/certified-backend/generated/cuda_lyra2_vectors.h": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/src/lyra.cuh"
+    ],
+    "source/certified-backend/generated/manifest.json": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate"
+    ],
+    "source/certified-backend/generated/mona_build_identity.hpp": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/src/build_identity.cpp"
+    ],
+    "source/certified-backend/generated/upstream_blake.cuh": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/src/pipeline.cu"
+    ],
+    "source/certified-backend/generated/upstream_bmw.cuh": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/src/pipeline.cu"
+    ],
+    "source/certified-backend/generated/upstream_cube.cuh": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/src/cube.cuh"
+    ],
+    "source/certified-backend/generated/upstream_lyra.cuh": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/src/lyra.cuh"
+    ],
+    "source/certified-backend/generated/upstream_skein.cuh": [
+      "required sealed/generated source or generator reference/license; NOT a new binary certificate",
+      "transitive configured local include from source/certified-backend/src/pipeline.cu"
+    ],
+    "source/certified-backend/include/mona/core.hpp": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from source/certified-backend/include/mona/miner.hpp",
+      "transitive configured local include from source/certified-backend/include/mona/measured_defaults.hpp",
+      "transitive configured local include from source/certified-backend/src/bench.cpp",
+      "transitive configured local include from source/certified-backend/src/reference.cpp",
+      "transitive configured local include from source/certified-backend/src/pipeline.cu",
+      "transitive configured local include from source/certified-backend/src/build_identity.cpp"
+    ],
+    "source/certified-backend/include/mona/measured_defaults.hpp": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from source/certified-backend/src/miner.cpp"
+    ],
+    "source/certified-backend/include/mona/miner.hpp": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from tests/phasec_gpu_integration_tests.cpp",
+      "transitive configured local include from source/certified-backend/src/miner.cpp",
+      "transitive configured local include from source/phasec-host/src/miner_worker.cpp"
+    ],
+    "source/certified-backend/src/bench.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/certified-backend/src/build_identity.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/certified-backend/src/cube.cuh": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from source/certified-backend/src/pipeline.cu"
+    ],
+    "source/certified-backend/src/lyra.cuh": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from source/certified-backend/src/pipeline.cu"
+    ],
+    "source/certified-backend/src/miner.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/certified-backend/src/pipeline.cu": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/certified-backend/src/reference.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/certified-backend/tools/build_identity.py": [
+      "preferred-source generation / build-identity input (standalone CMake is not invoked)"
+    ],
+    "source/certified-backend/tools/prepare.py": [
+      "preferred-source generation / build-identity input (standalone CMake is not invoked)"
+    ],
+    "source/phasec-host/include/console_ui.hpp": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from tests/console_ui_tests.cpp",
+      "transitive configured local include from source/phasec-host/src/main.cpp",
+      "transitive configured local include from source/phasec-host/src/stratum_client_win.cpp",
+      "transitive configured local include from source/phasec-host/src/miner_worker.cpp"
+    ],
+    "source/phasec-host/include/miner_worker.hpp": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from source/phasec-host/src/main.cpp",
+      "transitive configured local include from source/phasec-host/src/miner_worker.cpp"
+    ],
+    "source/phasec-host/include/phasec_core.hpp": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from source/phasec-host/include/console_ui.hpp",
+      "transitive configured local include from tests/phasec_core_tests.cpp",
+      "transitive configured local include from source/phasec-host/include/stratum_client.hpp",
+      "transitive configured local include from source/phasec-host/include/miner_worker.hpp",
+      "transitive configured local include from source/phasec-host/src/main.cpp",
+      "transitive configured local include from source/phasec-host/src/phasec_core.cpp"
+    ],
+    "source/phasec-host/include/stratum_client.hpp": [
+      "configured host/backend/test/bench translation unit or local header",
+      "transitive configured local include from source/phasec-host/src/main.cpp",
+      "transitive configured local include from source/phasec-host/src/stratum_client_win.cpp"
+    ],
+    "source/phasec-host/src/main.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/phasec-host/src/miner_worker.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/phasec-host/src/phasec_core.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/phasec-host/src/stratum_client_win.cpp": [
+      "configured host/backend/test/bench translation unit or local header"
+    ],
+    "source/pinned-upstream/Algo256/cuda_blake256.cu": [
+      "exact generator blob input / preferred corresponding source; not compiled as legacy translation unit"
+    ],
+    "source/pinned-upstream/Algo256/cuda_bmw256.cu": [
+      "exact generator blob input / preferred corresponding source; not compiled as legacy translation unit"
+    ],
+    "source/pinned-upstream/Algo256/cuda_cubehash256.cu": [
+      "exact generator blob input / preferred corresponding source; not compiled as legacy translation unit"
+    ],
+    "source/pinned-upstream/Algo256/cuda_skein256.cu": [
+      "exact generator blob input / preferred corresponding source; not compiled as legacy translation unit"
+    ],
+    "source/pinned-upstream/LICENSE.txt": [
+      "unaltered upstream aggregate GPLv3 / Apache license text; includes required distribution notices"
+    ],
+    "source/pinned-upstream/compat/jansson/dump.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/error.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/hashtable.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/hashtable.h": [
+      "transitive configured local include from source/pinned-upstream/compat/jansson/jansson_private.h",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/value.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/hashtable.c"
+    ],
+    "source/pinned-upstream/compat/jansson/jansson.h": [
+      "transitive configured local include from source/pinned-upstream/compat/jansson/load.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/jansson_private.h",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/memory.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/value.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/pack_unpack.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/dump.c",
+      "transitive configured local include from source/phasec-host/src/stratum_client_win.cpp"
+    ],
+    "source/pinned-upstream/compat/jansson/jansson_config.h": [
+      "transitive configured local include from source/pinned-upstream/compat/jansson/jansson.h",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/hashtable.c"
+    ],
+    "source/pinned-upstream/compat/jansson/jansson_private.h": [
+      "transitive configured local include from source/pinned-upstream/compat/jansson/load.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/strbuffer.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/memory.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/value.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/strconv.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/pack_unpack.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/hashtable.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/error.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/dump.c"
+    ],
+    "source/pinned-upstream/compat/jansson/jansson_private_config.h": [
+      "transitive configured local include from source/pinned-upstream/compat/jansson/utf.h",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/strconv.c"
+    ],
+    "source/pinned-upstream/compat/jansson/load.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/memory.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/pack_unpack.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/strbuffer.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/strbuffer.h": [
+      "transitive configured local include from source/pinned-upstream/compat/jansson/load.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/jansson_private.h",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/strbuffer.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/strconv.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/dump.c"
+    ],
+    "source/pinned-upstream/compat/jansson/strconv.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/utf.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/compat/jansson/utf.h": [
+      "transitive configured local include from source/pinned-upstream/compat/jansson/utf.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/load.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/value.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/pack_unpack.c",
+      "transitive configured local include from source/pinned-upstream/compat/jansson/dump.c"
+    ],
+    "source/pinned-upstream/compat/jansson/value.c": [
+      "exact configured CMake jansson *.c glob member"
+    ],
+    "source/pinned-upstream/cuda_helper.h": [
+      "exact generator blob input / preferred corresponding source; not compiled as legacy translation unit"
+    ],
+    "source/pinned-upstream/lyra2/Lyra2.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/lyra2/Lyra2.h": [
+      "transitive configured local include from source/pinned-upstream/lyra2/Sponge.c",
+      "transitive configured local include from source/pinned-upstream/lyra2/Lyra2.c",
+      "transitive configured local include from source/certified-backend/src/reference.cpp"
+    ],
+    "source/pinned-upstream/lyra2/Sponge.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/lyra2/Sponge.h": [
+      "transitive configured local include from source/pinned-upstream/lyra2/Sponge.c",
+      "transitive configured local include from source/pinned-upstream/lyra2/Lyra2.c"
+    ],
+    "source/pinned-upstream/lyra2/cuda_lyra2_vectors.h": [
+      "exact generator blob input / preferred corresponding source; not compiled as legacy translation unit"
+    ],
+    "source/pinned-upstream/lyra2/cuda_lyra2v2.cu": [
+      "exact generator blob input / preferred corresponding source; not compiled as legacy translation unit"
+    ],
+    "source/pinned-upstream/sph/blake.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/sph/bmw.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/sph/cubehash.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/sph/keccak.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/sph/md_helper.c": [
+      "transitive configured local include from source/pinned-upstream/sph/sph_sha2.c"
+    ],
+    "source/pinned-upstream/sph/skein.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/sph/sph_blake.h": [
+      "transitive configured local include from source/pinned-upstream/sph/blake.c",
+      "transitive configured local include from source/certified-backend/src/reference.cpp",
+      "transitive configured local include from source/certified-backend/generated/upstream_blake.cuh"
+    ],
+    "source/pinned-upstream/sph/sph_bmw.h": [
+      "transitive configured local include from source/pinned-upstream/sph/bmw.c",
+      "transitive configured local include from source/certified-backend/src/reference.cpp"
+    ],
+    "source/pinned-upstream/sph/sph_cubehash.h": [
+      "transitive configured local include from source/pinned-upstream/sph/cubehash.c",
+      "transitive configured local include from source/certified-backend/src/reference.cpp"
+    ],
+    "source/pinned-upstream/sph/sph_keccak.h": [
+      "transitive configured local include from source/pinned-upstream/sph/keccak.c",
+      "transitive configured local include from source/certified-backend/src/reference.cpp"
+    ],
+    "source/pinned-upstream/sph/sph_sha2.c": [
+      "explicit configured CPU/core/reference translation unit"
+    ],
+    "source/pinned-upstream/sph/sph_sha2.h": [
+      "transitive configured local include from source/pinned-upstream/sph/sph_sha2.c",
+      "transitive configured local include from source/phasec-host/src/phasec_core.cpp"
+    ],
+    "source/pinned-upstream/sph/sph_skein.h": [
+      "transitive configured local include from source/pinned-upstream/sph/skein.c",
+      "transitive configured local include from source/certified-backend/src/reference.cpp"
+    ],
+    "source/pinned-upstream/sph/sph_types.h": [
+      "transitive configured local include from source/pinned-upstream/sph/sph_bmw.h",
+      "transitive configured local include from source/pinned-upstream/sph/sph_skein.h",
+      "transitive configured local include from source/pinned-upstream/sph/sph_cubehash.h",
+      "transitive configured local include from source/pinned-upstream/sph/sph_keccak.h",
+      "transitive configured local include from source/pinned-upstream/sph/sph_blake.h",
+      "transitive configured local include from source/pinned-upstream/sph/sph_sha2.h"
+    ],
+    "tests/console_ui_tests.cpp": [
+      "configured correctness/UI/GPU test or retained accepted C01 audit/mock fixture"
+    ],
+    "tests/mock_stratum_server.py": [
+      "configured correctness/UI/GPU test or retained accepted C01 audit/mock fixture"
+    ],
+    "tests/phasec_core_tests.cpp": [
+      "configured correctness/UI/GPU test or retained accepted C01 audit/mock fixture"
+    ],
+    "tests/phasec_gpu_integration_tests.cpp": [
+      "configured correctness/UI/GPU test or retained accepted C01 audit/mock fixture"
+    ],
+    "tests/static_personal_build_audit.py": [
+      "configured correctness/UI/GPU test or retained accepted C01 audit/mock fixture"
+    ]
+  },
+  "added_license_notice": {
+    "path": "licenses/JANSSON_LICENSE.txt",
+    "reason": "Referenced MIT text missing in original snapshot; official Jansson v2.6 license-only supplement",
+    "source": "https://raw.githubusercontent.com/akheron/jansson/v2.6/LICENSE",
+    "sha256": "7A08AF46DE2D67DCF4AE09180AC173B488C45802D97D0AAF1FC831873EB4D941",
+    "acquisition": "Web-rendered lines transcribed with LF; original download bytes unavailable, not claimed byte-identical."
+  }
+}
