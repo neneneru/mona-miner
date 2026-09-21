@@ -1,0 +1,32 @@
+Mona Miner Public v1 source candidate — not a binary release
+
+This source uses the supplied tpruvot/ccminer windows snapshot identified by
+upstream revision 6ff4e50987e59a70056324a94ed8667cc0bf598d. This is a historical
+upstream identity; no current Mona Miner Git HEAD or public repository is implied.
+
+The supplied aggregate LICENSE.txt (GPLv3 text plus Apache 2.0 text) is preserved
+verbatim. Per-file notices, including sphlib/SAPHIR, Jansson, Lyra PHC team, CUDA
+extract authors and any applicable NVIDIA notices, remain in their source files.
+Names, attribution emails and license/project URLs in those notices are not pool
+credentials, telemetry, or personal runtime configuration and must not be stripped.
+Do not interpret this notice as relicensing third-party components.
+
+The original generator scripts and exact source blobs for generated CUDA headers
+are provided. Corresponding source publication must include these inputs, build
+instructions, modifications and notices; do not distribute only extracted headers.
+System/toolchain dependencies are not bundled here. Any later redistribution of
+CUDA/Visual C++ runtime DLLs requires the applicable installed-toolchain license
+and redistribution notices; no blanket DLL redistribution permission is asserted.
+
+Stage 2 modification (2026-09-19): main.cpp changes one obsolete private-build
+diagnostic to Mona Miner branding. No parsing, C05 control flow, mining, target,
+Stratum, or protected performance source is changed.
+
+Historical SM120 embedded build identity, if present, identifies an earlier source
+snapshot. It is NOT the identity or certificate of a new binary. New build, core
+library, executable and package SHA256 must be recorded separately in BUILD_INFO.
+
+Jansson 2.6 MIT license text is in licenses/JANSSON_LICENSE.txt.
+The original per-file copyright notices remain unchanged. This missing
+license text was transcribed from the official v2.6 LICENSE on 2026-09-19;
+this is a license-only supplement, not a replacement Jansson source version.

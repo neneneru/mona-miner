@@ -1,0 +1,12 @@
+{
+  "base": "6ff4e50987e59a70056324a94ed8667cc0bf598d",
+  "blobs": {
+    "Algo256/cuda_blake256.cu": "418ca07ec53be0bbf56935e8fca53174d3ae7b16",
+    "Algo256/cuda_cubehash256.cu": "153e87a10eb85043d7b5674adc1d0e1d701aa9c4",
+    "Algo256/cuda_skein256.cu": "cbeb660e85aaca0fbea2038223e78c5ada0824b0",
+    "Algo256/cuda_bmw256.cu": "0fde12ee248d2faf5a54332738bf8f5e54a680af",
+    "lyra2/cuda_lyra2v2.cu": "df3291c1fc33a3b55ecbf4ab58c76d5dfb8acae2",
+    "lyra2/cuda_lyra2_vectors.h": "6bb11d3c507fb325731c8324d7cafbec0999aeae",
+    "cuda_helper.h": "c51a3253326557762eefb4c2183f9c37148d4e50"
+  }
+}
