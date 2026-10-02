@@ -45,11 +45,21 @@ Exact corresponding device source is included under `device-source/`.
 Sanitization changed debug/source-path metadata only; runtime/device code was
 revalidated before GPU/live qualification.
 
-## Credentials
+## 起動 / USER pool credentials
 
-USER credentials enter through standard input. `source/examples/Start-Mining.ps1`
-prompts for USER endpoint, worker and mining-only password without placing them
-in argv or environment variables.
+Public v2 は Public v1 と同じ通常CLIをサポートします。
+
+```text
+mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS
+```
+
+`-o / --url`、`-u / --user`、`-p / --pass` を使用できます。
+Release package の `start_vippool.bat` もこのCLIを直接使用し、USER worker /
+password をBATへ保存して繰り返し起動できます。
+
+`--credentials-stdin` は既存のvalidation / automation互換用として引き続き
+サポートしますが、通常利用では必須ではありません。CLI credential modeと
+`--credentials-stdin` の同時指定は拒否します。
 
 The Developer destination is intentionally public mining-only authentication and
 is centralized in `source/src/developer_destination.cpp`.
@@ -80,11 +90,15 @@ classified as a reproducible miner defect.
 
 ## Source identity
 
-The validated host source is retained byte-for-byte under `source/`, including
-validation-era target names. Qualified cubins are provided under `images/`.
-A rebuilt cubin is not silently treated as the qualified image.
+The frozen GPU backend, qualified cubins and corresponding device-source remain
+unchanged. Public v2 adds a host-only v1-compatible USER CLI
+(`-o / -u / -p` and long aliases); this does not alter the GPU launch contract,
+98q/2q accounting, Stratum session implementation or Developer destination.
 
-See `SOURCE_SCOPE.json`.
+The pre-CLI-compatibility validation identity and the scope of this host-only
+compatibility change are recorded in `SOURCE_SCOPE.json`. The exact rebuilt
+release executable must be requalified before tag / Release publication.
+A rebuilt cubin is not silently treated as the qualified image.
 
 `source/shipping_docs/README.md` の `private product prototype` / `review prototype`
 表記は、validated host tree の byte identity を保持するために保存した

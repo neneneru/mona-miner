@@ -46,6 +46,17 @@ Public v2 SM120 の frozen backend は以下の構成です。
 詳細な GPU image / source provenance、検証済みSHA256、正しさ試験、
 Compute Sanitizer、live-pool validation は [SM120 README](sm120/) を確認してください。
 
+## 起動
+
+Public v1 と同じ `-o / -u / -p` CLIでUSER poolを指定できます。
+
+```text
+mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS
+```
+
+Release package では `start_vippool.bat` にUSER worker / passwordを設定して
+保存し、以後はBATから起動できます。
+
 ## 共通ポリシー
 
 - 隠し / 予備プールへの接続、テレメトリ送信、自動更新確認はありません。

@@ -5,11 +5,11 @@
   "validated_gpu": "NVIDIA GeForce RTX 5090",
   "cuda_baseline": "13.4.x",
   "source_authority": {
-    "host_tree_sha256": "a423ff789ce4a84641927679eccf3ab5c3c9564696168e803a32799be804e0d3",
     "validated_package_manifest_sha256": "ac99be682b9856d9eff2656998c6bcdec73374784e56e35df1816fdac4547702",
     "build_receipt_sha256": "76ef04718d41f9a12cc15567dbf2737cb030724952fe9451fabce391af74cf38",
     "gpu_result_sha256": "eb3e69940828a0f6855951da94c8905dd394b7b00259486a7506215c77259a5f",
-    "shipping_exe_sha256": "e81c19837e51202db72f27cecdbad2e83aa5e3279bc3e6d0a0c961112486607e"
+    "validated_pre_cli_compat_host_tree_sha256": "a423ff789ce4a84641927679eccf3ab5c3c9564696168e803a32799be804e0d3",
+    "validated_pre_cli_compat_shipping_exe_sha256": "e81c19837e51202db72f27cecdbad2e83aa5e3279bc3e6d0a0c961112486607e"
   },
   "device_sources": {
     "N02_EXP01_PRODUCER": {
@@ -364,5 +364,23 @@
     "diagnostic_user_accepts": 355,
     "diagnostic_user_rejects": 0,
     "release_blocker": false
+  },
+  "host_cli_compatibility": {
+    "base_commit": "b3c8218d6cf32d9ac0adbcdd1ecd0313809f0367",
+    "scope": "v1-compatible USER CLI: -o/--url, -u/--user, -p/--pass",
+    "changed_runtime_files": [
+      "source/include/mona2/cli.hpp",
+      "source/src/cli.cpp",
+      "source/src/application.cpp"
+    ],
+    "stdin_mode_retained": true,
+    "credential_mode_mix_rejected": true,
+    "frozen_backend_changed": false,
+    "scheduler_accounting_stratum_changed": false,
+    "developer_destination_changed": false,
+    "qualified_images_changed": false,
+    "device_sources_changed": false,
+    "post_change_release_exe_sha256": null,
+    "release_binary_requalification": "REQUIRED_BEFORE_TAG_OR_RELEASE"
   }
 }

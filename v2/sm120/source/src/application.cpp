@@ -48,7 +48,7 @@ namespace mona2 {
     }
     int run_application(Options o,std::optional<std::chrono::seconds> duration){
         if(o.help){
-            std::cout<<"Mona Miner v2 SM120 prototype\n-a lyra2v2 --credentials-stdin [--device N] [--shares-limit N]\n-a lyra2v2 --benchmark [--benchmark-batches N]\nDeveloper Fee: 2.00% of completed unique local work.\nBenchmark/help create no network connection.\n";
+            std::cout<<"Mona Miner v2 - Monacoin Lyra2REv2\nUsage:\n  mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS [--device N] [--shares-limit N] [--all] [--interval N]\n  mona-miner.exe -a lyra2v2 --benchmark [--device N] [--benchmark-batches N]\nDeveloper Fee: 2.00% of completed unique local work.\nOnly lyra2v2 is supported; benchmark/help create no network connection.\n";
             return 0;
         }
         if(o.benchmark){
