@@ -1,5 +1,9 @@
 # Mona Miner Public v2
 
+> Public v2.0.0 の配布は現在一時停止しています。
+> console / launcher UX を修正し、v2.0.1候補を再検証中です。
+> 新規利用は再公開まで [Public v1](../v1/) を利用してください。
+
 ## 概要
 
 - Monacoin（Lyra2REv2）向けの CUDA 13.4 対応 NVIDIA CUDA マイナーです。

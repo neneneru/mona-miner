@@ -1,5 +1,9 @@
 # Mona Miner v2 / SM120
 
+> Public v2.0.0 の配布は現在一時停止しています。
+> console / launcher UX を修正し、v2.0.1候補を再検証中です。
+> 新規利用は再公開まで [Public v1](../../v1/) を利用してください。
+
 ## 概要
 
 - SM120（RTX 50 シリーズ）向けの Public v2 実装です。
