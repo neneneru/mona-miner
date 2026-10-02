@@ -11,6 +11,8 @@ Release候補を作るprivacy buildでは、source / buildを個人情報や開�
 短いstaging rootへ置き、`build-tools/msvc_privacy_toolchain.cmake` をconfigure時から
 使用してください。toolchainはMSVCのcompiler-identificationを含む全compileへ
 `/experimental:deterministic` と `/pathmap` を適用し、staging rootを `s` へ置換します。
+`MONA2_PATHMAP_ROOT` のtry_compileへの引き継ぎもtoolchain内で行うため、
+`CMAKE_TRY_COMPILE_PLATFORM_VARIABLES` を追加のCLI引数で指定する必要はありません。
 
 ```powershell
 $sm120 = (Resolve-Path 'v2/sm120').Path.Replace('\', '/')
@@ -97,14 +99,44 @@ Release候補のprivacy gateでは、CMake configureより前にneutral staging 
 そのrootを `MONA2_PATHMAP_ROOT` として渡してください。sourceとbuildを同じroot配下へ
 置くと1つのprefix mapで両方を覆えます。
 
-例:
+以下はprivacy検証用の完全なNinja / Release手順です。x64 Native Tools環境で
+CMake / Ninja / PythonをPATHへ設定し、exact source treeを新規neutral rootの
+`src/` へ展開してから実行してください。既存build cacheは再利用しません。
+`$stage` とCUDA SDKの場所だけを環境に合わせて指定します。
 
 ```powershell
 $stage = 'C:/mona-v201'
-cmake -S "$stage/src/v2/sm120/source" -B "$stage/build" -G 'Visual Studio 17 2022' -A x64 `
-  "-DCMAKE_TOOLCHAIN_FILE=$stage/src/v2/sm120/build-tools/msvc_privacy_toolchain.cmake" `
-  "-DMONA2_PATHMAP_ROOT=$stage" ...
+$sm120 = "$stage/src/v2/sm120"
+$build = "$stage/build"
+$object = "$build/mona2_images.obj"
+$cudaSdk = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.4'
+
+python -m unittest discover -s "$sm120/build-tools" -p 'test_*.py'
+if ($LASTEXITCODE -ne 0) { throw 'helper tests failed' }
+python "$sm120/build-tools/embed_images.py" --output $object
+if ($LASTEXITCODE -ne 0) { throw 'image generation failed' }
+
+cmake -S "$sm120/source" -B $build -G Ninja `
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
+  "-DCMAKE_TOOLCHAIN_FILE=$sm120/build-tools/msvc_privacy_toolchain.cmake" `
+  "-DMONA2_PATHMAP_ROOT=$stage" `
+  -DMONA2_FROZEN_GPU=ON "-DMONA2_CUDA_ROOT=$cudaSdk" `
+  "-DMONA2_IMAGE_OBJECT=$object" "-DMONA2_GENERATED_INCLUDE=$sm120/source/include"
+if ($LASTEXITCODE -ne 0) { throw 'configure failed' }
+
+cmake --build $build --parallel
+if ($LASTEXITCODE -ne 0) { throw 'build failed' }
+ctest --test-dir $build --output-on-failure
+if ($LASTEXITCODE -ne 0) { throw 'CPU/mock tests failed' }
+python "$sm120/build-tools/embed_images.py" --output $object --verify-only `
+  --executable "$build/mona-miner-prototype.exe"
+if ($LASTEXITCODE -ne 0) { throw 'linked payload verification failed' }
 ```
+
+Ninjaの出力EXEは `$build/mona-miner-prototype.exe` です。
+compiler-identificationのC / C++実行記録、`compile_commands.json`、linker規則で
+上記privacy flagsと `/Brepro` を確認してください。compiler-idを含む全OBJ、
+EXE、生成されたPDB/debug recordsをscanし、不一致時はSTOPしてください。
 
 toolchainを使わない通常の開発buildを禁止するものではありませんが、Release候補の
 privacy qualificationでは中間OBJを含めて絶対staging pathが残っていないことを確認してください。

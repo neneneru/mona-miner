@@ -5,6 +5,10 @@ if(NOT CMAKE_HOST_WIN32)
   message(FATAL_ERROR "MSVC privacy toolchain requires a Windows host")
 endif()
 
+# Forward the root when CMake reloads this toolchain inside try_compile.
+list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES MONA2_PATHMAP_ROOT)
+list(REMOVE_DUPLICATES CMAKE_TRY_COMPILE_PLATFORM_VARIABLES)
+
 if(NOT DEFINED MONA2_PATHMAP_ROOT OR MONA2_PATHMAP_ROOT STREQUAL "")
   message(FATAL_ERROR "Set MONA2_PATHMAP_ROOT to the neutral staging root")
 endif()
