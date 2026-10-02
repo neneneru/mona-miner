@@ -11,7 +11,9 @@
 #endif
 namespace mona2 {
     namespace {
-        std::atomic<StopSignal*> console_stop{nullptr};
+        std::atomic<StopSignal*> console_stop{
+            nullptr
+        };
 #ifdef _WIN32
         BOOL WINAPI on_console(DWORD code){
             if(code==CTRL_C_EVENT||code==CTRL_BREAK_EVENT||code==CTRL_CLOSE_EVENT||code==CTRL_SHUTDOWN_EVENT){
@@ -63,11 +65,19 @@ namespace mona2 {
             const auto start=Clock::now();
             for(std::uint64_t i=0;i<o.benchmark_batches;++i){
                 auto work=std::make_shared<Work>(w);
-                Assignment a{work,Role::User,i+1,0,std::uint32_t((i%4096)*NativeBatch),NativeBatch};
+                Assignment a{
+                    work,Role::User,i+1,0,std::uint32_t((i%4096)*NativeBatch),NativeBatch
+                };
                 accounting.scheduled(Role::User,NativeBatch);
                 RangeTransaction t(a);
                 while(!t.done()){
-                    auto r=t.step(gpu,output,accounting,[]{return true;},[](const Words&x,std::uint32_t n){return cpu_hash(x,n);});
+                    auto r=t.step(gpu,output,accounting,[]{
+                        return true;
+                    }
+                    ,[](const Words&x,std::uint32_t n){
+                        return cpu_hash(x,n);
+                    }
+                    );
                     executed=add64(executed,r.actual);
                     completed+=Count(r.committed);
                     while(output.pop()){}
@@ -94,7 +104,9 @@ namespace mona2 {
         if(o.json)log.line("{\"event\":\"POLICY\",\"developer_fee_percent\":2,\"debt_carry_forward\":false}");
         else log.console("Developer Fee: 2%");
         ShareBudget budget(o.shares_limit);
-        std::atomic<bool> producer_done{false};
+        std::atomic<bool> producer_done{
+            false
+        };
         const auto run=static_cast<std::uint64_t>(Clock::now().time_since_epoch().count())|1;
         SessionActor user(run,Authority::User,o.user,budget,stop,producer_done,log,false,o.all);
         SessionActor developer(run,Authority::Developer,developer_credentials(),budget,stop,producer_done,log,false,o.all);

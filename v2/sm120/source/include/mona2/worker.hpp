@@ -11,7 +11,9 @@ namespace mona2 {
         Time start_{};
         Count baseline_{};
         public:
-        void reset()noexcept{active_=false;}
+        void reset()noexcept{
+            active_=false;
+        }
         void start(Time now,Count committed){
             if(active_)return;
             active_=true;
@@ -28,7 +30,9 @@ namespace mona2 {
             baseline_=committed;
             return seconds>0.0?delta.number()/seconds/1e6:0.0;
         }
-        bool active()const noexcept{return active_;}
+        bool active()const noexcept{
+            return active_;
+        }
     };
     class GpuWorker {
         Backend&backend_;
@@ -50,8 +54,12 @@ namespace mona2 {
         public:
         GpuWorker(Backend&b,SessionActor&u,SessionActor&d,ShareBudget&budget,StopSignal&s,AuditLog&l,int device,unsigned interval=60):backend_(b),user_(u),developer_(d),budget_(budget),stop_(s),log_(l),quota_(),device_(device),interval_(interval){}
         void run(std::optional<Time> until=std::nullopt,std::optional<std::uint64_t> validation_work_limit=std::nullopt);
-        const QuotaFrame&quota()const{return quota_;}
-        const WorkerMetrics&metrics()const{return metrics_;}
+        const QuotaFrame&quota()const{
+            return quota_;
+        }
+        const WorkerMetrics&metrics()const{
+            return metrics_;
+        }
         std::string summary()const;
     };
 }

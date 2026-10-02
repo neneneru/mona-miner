@@ -8,6 +8,7 @@ int main(int argc,char**argv){
         mona2::Options o;
         o.algo="lyra2v2";
         o.credentials_stdin=true;
+        o.json=true;
         o.device=int(mona2::decimal(argv[1],INT32_MAX));
         return mona2::run_application(o,std::chrono::seconds(1800));
     }catch(const mona2::Error&e){
