@@ -85,3 +85,15 @@ validation-era target names. Qualified cubins are provided under `images/`.
 A rebuilt cubin is not silently treated as the qualified image.
 
 See `SOURCE_SCOPE.json`.
+
+`source/shipping_docs/README.md` の `private product prototype` / `review prototype`
+表記は、validated host tree の byte identity を保持するために保存した
+validation-era snapshot の歴史的文面です。現在の Public v2 の release status を
+示すものではありません。公開状況は repository / PR / GitHub Releases を確認してください。
+
+## Public GPU executable build
+
+public repo の qualified cubins 3本から image object を生成する手順を
+[build-tools/README.md](build-tools/README.md) に記載しています。
+private sealed runner は不要です。frozen `source/` と cubin bytes は変更せず、
+既存の `MONA2_IMAGE_OBJECT` / `MONA2_GENERATED_INCLUDE` 引数を満たします。
