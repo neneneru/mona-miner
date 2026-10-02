@@ -13,6 +13,9 @@ namespace mona2 {
             if(k=="-a")k="--algo";
             else if(k=="-d")k="--device";
             else if(k=="-h")k="--help";
+            else if(k=="-o")k="--url";
+            else if(k=="-u")k="--user";
+            else if(k=="-p")k="--pass";
             require(seen.insert(k).second,"DUPLICATE_OPTION");
             auto val=[&](){ require(i+1<argc,"MISSING_OPTION_VALUE"); return std::string(argv[++i]); };
             if(k=="--help")o.help=true;
@@ -20,6 +23,9 @@ namespace mona2 {
             else if(k=="--all")o.all=true;
             else if(k=="--credentials-stdin")o.credentials_stdin=true;
             else if(k=="--algo")o.algo=val();
+            else if(k=="--url")o.user.endpoint=endpoint(val());
+            else if(k=="--user"){o.user.worker=val();validate_credential(o.user.worker,256);}
+            else if(k=="--pass"){o.user.password=val();validate_credential(o.user.password,1024,true);}
             else if(k=="--device")o.device=int(decimal(val(),INT32_MAX));
             else if(k=="--interval"){ o.interval=unsigned(decimal(val(),86400)); require(o.interval>0,"INTERVAL_ZERO"); }
             else if(k=="--benchmark-batches"){ o.benchmark_batches=std::uint32_t(decimal(val(),UINT32_MAX)); require(o.benchmark_batches>0,"BENCHMARK_ZERO"); }
@@ -27,11 +33,17 @@ namespace mona2 {
             else throw Error("UNSUPPORTED_OPTION");
         }
         require((o.algo.empty()&&o.help)||o.algo=="lyra2v2","ALGORITHM_UNSUPPORTED");
-        if(!o.help&&!o.benchmark)require(o.credentials_stdin,"MINING_CREDENTIALS_STDIN_REQUIRED");
+        const bool has_url=seen.contains("--url"),has_user=seen.contains("--user"),has_pass=seen.contains("--pass");
+        const bool cli_any=has_url||has_user||has_pass;
+        o.credentials_cli=cli_any;
+        require(!(o.credentials_stdin&&cli_any),"CREDENTIAL_MODE_CONFLICT");
+        if(!o.help&&!o.benchmark&&!o.credentials_stdin){
+            require(has_url&&has_user,"MINING_CREDENTIALS_REQUIRED");
+        }
         return o;
     }
     void read_credentials(Options&o){
-        require(o.credentials_stdin,"STDIN_CREDENTIAL_MODE");
+        require(o.credentials_stdin&&!o.credentials_cli,"STDIN_CREDENTIAL_MODE");
         std::string s;
         char c;
         while(std::cin.get(c)&&c!='\n'){ require(s.size()<8192,"CREDENTIAL_INPUT_SIZE"); s+=c; }

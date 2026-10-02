@@ -33,12 +33,23 @@ int main(){
             require(failed&&calls==before,"INVALID_CLI_TOUCHED_GPU");
         }
         // Removed/unsafe legacy options must fail before backend or network creation.
-        for(const auto* option:{"--donation","--donation=0","--donate","--fee","--devfee","-u","--user","-p","--pass","-o","--url"}){
+        for(const auto* option:{"--donation","--donation=0","--donate","--fee","--devfee"}){
             const char* args[]={"probe","-a","lyra2v2",option,"2"};
             bool failed=false;
             try{run_application(parse_cli(5,args));}catch(const Error&){failed=true;}
             require(failed&&calls==before,"REMOVED_OPTION_CREATED_GPU");
         }
+        const char* compat[]={
+            "probe","-a","lyra2v2","-o","stratum+tcp://127.0.0.1:1","-u","fixture","-p","fixture-pass"
+        };
+        auto parsed=parse_cli(9,compat);
+        require(parsed.credentials_cli&&!parsed.credentials_stdin&&parsed.user.worker=="fixture"&&calls==before,"V1_CLI_COMPATIBILITY");
+        const char* mixed[]={
+            "probe","-a","lyra2v2","-o","stratum+tcp://127.0.0.1:1","-u","fixture","--credentials-stdin"
+        };
+        bool mixed_failed=false;
+        try{(void)parse_cli(8,mixed);}catch(const Error&){mixed_failed=true;}
+        require(mixed_failed&&calls==before,"CREDENTIAL_MODE_CONFLICT_CREATED_GPU");
         const char* bench[]={
             "probe","-a","lyra2v2","--benchmark","--benchmark-batches","1","--credentials-stdin"
         };

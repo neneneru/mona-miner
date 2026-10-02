@@ -58,10 +58,22 @@ int main(){try{
   c=q.choose(true,true,NonceSpace);ck(c->role==Role::User&&q.remaining()==98*q.quantum());
   q.availability(false,true);ck(!q.choose(false,true,NonceSpace));invariants(q);
  }
- for(const char* option:{"--donation","--donation=0","--donation=9","--donate","--devfee","--fee","--donation-percent","-u","--user","--pass","--url"}){
+ for(const char* option:{"--donation","--donation=0","--donation=9","--donate","--devfee","--fee","--donation-percent"}){
   const char* a[]={"test","-a","lyra2v2",option,"0"};fails([&]{parse_cli(5,a);});
  }
  const char* ok[]={"test","-a","lyra2v2","--credentials-stdin","--shares-limit","1"};ck(parse_cli(6,ok).shares_limit==1);
+ {
+  const char* cli[]={"test","-a","lyra2v2","-o","stratum+tcp://127.0.0.1:1","-u","fixture","-p","fixture-pass","--shares-limit","1"};
+  auto o=parse_cli(11,cli);ck(o.credentials_cli&&!o.credentials_stdin&&o.user.endpoint.canonical()=="stratum+tcp://127.0.0.1:1"&&o.user.worker=="fixture"&&o.user.password=="fixture-pass"&&o.shares_limit==1);
+ }
+ {
+  const char* cli[]={"test","-a","lyra2v2","--url","stratum+tcp://127.0.0.1:1","--user","fixture"};
+  auto o=parse_cli(7,cli);ck(o.credentials_cli&&o.user.password.empty());
+ }
+ {
+  const char* missing[]={"test","-a","lyra2v2","-o","stratum+tcp://127.0.0.1:1"};fails([&]{parse_cli(5,missing);});
+  const char* mixed[]={"test","-a","lyra2v2","-o","stratum+tcp://127.0.0.1:1","-u","fixture","--credentials-stdin"};fails([&]{parse_cli(8,mixed);});
+ }
  // No configuration keys beyond the three runtime credential values.
  for(auto extra:{"donation","fee","devfee","developer_endpoint"}){
   Options o;o.credentials_stdin=true;
