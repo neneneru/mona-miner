@@ -4,7 +4,7 @@
 
 - Monacoin（Lyra2REv2）向けの CUDA 13.4 対応 NVIDIA CUDA マイナーです。
 - Public v2 は SM120 を対象とし、RTX 5090 で実機検証しています。
-- 固定 Developer Fee 2% を採用し、Donation はありません。
+- 固定 Developer Fee 2% を採用しています。
 
 ## 対応環境
 
@@ -15,7 +15,6 @@
 ## 手数料
 
 - Developer Fee: 2%
-- Donation: なし
 - completed-work 基準で USER 98q → DEVFEE 2q（q = 64）を割り当てます。
 
 Developer Fee の未実行分を後からまとめて回収する debt / catch-up はありません。
