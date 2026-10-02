@@ -8,9 +8,9 @@
 
 ## 対応環境
 
-- GPU architecture: SM120
+- GPUアーキテクチャ: SM120
 - 実機検証: NVIDIA GeForce RTX 5090
-- CUDA baseline: 13.4.x
+- CUDA基準: 13.4.x
 
 ## 手数料
 
@@ -42,17 +42,17 @@ Public v1からPublic v2への最終的な製品性能差や、各最適化の�
 
 RTX 5090で30分の実プール検証を2回実施しています。
 
-| Run | Total MH/s | USER実効 MH/s | Fee work | 平均board W | Board MH/J |
+| 測定 | Total MH/s | USER実効 MH/s | Fee work | 平均ボード電力 | MH/J |
 |---|---:|---:|---:|---:|---:|
-| A | 423.778 | 415.352 | 1.9883% | 437.10 | 0.9694 |
-| B | 426.614 | 418.114 | 1.9925% | 438.60 | 0.9726 |
+| A | 423.778 | 415.352 | 1.9883% | 437.10 W | 0.9694 |
+| B | 426.614 | 418.114 | 1.9925% | 438.60 W | 0.9726 |
 
 代表値は約425 MH/s total / 約417 MH/s USER実効です。
 Public v1 SM120 約395.93 MH/s比では、total 約 +7.3%、USER実効 約 +5.3% です。
 
 上記はRTX 5090と検証環境における実測値であり、すべてのSM120 GPUで同一性能を保証するものではありません。
 
-## Qualified GPU image / source
+## 検証済みGPUイメージ / ソース
 
 Public v2.0.0で使用するprivacy-sanitized cubinは以下の3本です。
 
@@ -61,7 +61,8 @@ Public v2.0.0で使用するprivacy-sanitized cubinは以下の3本です。
 - R02_CUBE2_TAIL_FUSION: `84f3b1b105a7cb4df7dec50968e3ea81e2c4a0c97f83afe4872e413376f5e2bd`
 
 対応するdevice sourceは `device-source/` に収録しています。
-privacy sanitizationで変更したのはdebug/source-path metadataのみで、runtime/device codeの不変性を確認したうえでGPU・実プール検証を行っています。
+privacy sanitizationで変更したのはdebug/source-path metadataのみで、
+runtime/device codeの不変性を確認したうえでGPU・実プール検証を行っています。
 
 ## 起動 / USER pool認証情報
 
@@ -78,10 +79,10 @@ Release package の `start_vippool.bat` はVIP Pool向けの起動例です。
 BATの利用は必須ではなく、対応するStratum poolをCLIから指定して直接起動できます。
 BATへ保存したUSER worker / passwordは平文になるため、mining専用の認証情報を使用してください。
 
-`--credentials-stdin` はvalidation / automation互換用として保持しています。
+`--credentials-stdin` は検証・自動化用途との互換性のため保持しています。
 通常利用では必須ではなく、CLI credential modeとの同時指定は拒否します。
 
-Developer destinationは公開用のmining専用認証情報で、
+Developer Feeの接続先認証情報は、公開前提のmining専用情報として
 `source/src/developer_destination.cpp` の1か所に集約しています。
 
 ## 検証
@@ -109,11 +110,11 @@ DEVFEE rejection、local stale、UNKNOWN、not-sentはありませんでした�
 その後のpersistent-session diagnosticではUSER submit 355/355 accepted、reconnect 0を確認しており、
 再現性のあるminer defectやrelease blockerとは分類していません。
 
-## ソースとRelease identity
+## ソース / Release同一性
 
 Public v2.0.0のGit tagは `sm120-v2.0.0` です。
 
-最終Release executable SHA256:
+Release実行ファイル SHA256:
 
 ```text
 D2E172A34871287B9C120D6502F1C966899AB923F7BE5E0D5A0FF3DDC9DE3386
@@ -121,18 +122,18 @@ D2E172A34871287B9C120D6502F1C966899AB923F7BE5E0D5A0FF3DDC9DE3386
 
 CLI互換修正ではqualified cubin、device-source、GPU backend、
 98q/2q accounting、Stratum/session、Developer destinationを変更していません。
-検証済みsourceとbinaryのprovenanceは `SOURCE_SCOPE.json` に記録しています。
+検証済みsourceとbinaryの来歴は `SOURCE_SCOPE.json` に記録しています。
 
-Release後に同じsourceから再buildしたbinaryでも、byte identityが異なる場合は
+Release後に同じsourceから再buildしたbinaryでも、バイト単位で異なる場合は
 自動的にPublic v2.0.0の検証済みbinaryと同一とは扱いません。
 
 `source/shipping_docs/README.md` に残る `private product prototype` / `review prototype`
-という表記は、validation時点のhost treeを保持するための歴史的文面です。
+という表記は、検証時点のhost treeを保持するための歴史的文面です。
 現在の公開状態を示すものではありません。
 
 ## Public GPUビルド
 
-public repoのqualified cubin 3本からimage objectを生成し、
+公開リポジトリのqualified cubin 3本からimage objectを生成し、
 GPU executableをbuildする手順は [build-tools/README.md](build-tools/README.md) に記載しています。
 
 private sealed runnerは不要です。
