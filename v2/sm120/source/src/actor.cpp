@@ -207,6 +207,8 @@ namespace mona2 {
                         auto now=Clock::now();
                         if(stop_.requested()&&!stop_at)stop_at=now+std::chrono::seconds(5);
                         if(stop_at&&now>=*stop_at)break;
+                        // Apply all buffered complete control frames before share admission. If a
+                        // read turn hits the byte budget, skip writes and continue draining.
                         std::array<char,8192> bytes{};
                         std::size_t read=0;
                         bool drained=false;
@@ -282,6 +284,7 @@ namespace mona2 {
                     log_.event(authority_,"ACTOR_RUNTIME_EXCEPTION");
                     stop_.request();
                 }
+                // Socket/overlapped objects are destroyed only by this owner.
                 protocol_.disconnect();
                 transport.close();
                 if(retained){
@@ -301,6 +304,8 @@ namespace mona2 {
                 log_.reconnect_backoff(authority_,delay);
                 stop_.wait(std::chrono::milliseconds(delay));
             }
+            // No producer reservation is closed underneath an unfinished GPU scan. Queued
+            // candidates arriving during shutdown are counted explicitly as not sent.
             while(auto c=mailbox_.pop())protocol_.unsent(c->assignment.role);
             publish(Clock::now(),true);
         }

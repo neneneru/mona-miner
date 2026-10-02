@@ -50,6 +50,7 @@ namespace mona2 {
             return 0;
         }
         if(o.benchmark){
+            // Branch before stdin credentials, WSA, resolver, actor or socket construction.
             FrozenBackend gpu(o.device);
             Work w{};
             w.target={};
@@ -116,6 +117,8 @@ namespace mona2 {
         stop.request();
         user.join();
         developer.join();
+        // Actor deadline may expire before a slow GPU leaf completes. Reconcile the
+        // remaining queue after both its producer and consumer have terminated.
         user.finalize_queue();
         developer.finalize_queue();
         log.line(network_summary(Authority::User,user.counts()));
