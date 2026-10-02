@@ -7,6 +7,11 @@ GPU executableのbuild自体にはGPUやpool credentialsは不要です。
 repo rootでPowerShellから実行します。CUDA SDKの場所は自分のインストール先を
 指定してください。以下の標準パスは例で、helper内にmachine pathは埋め込みません。
 
+Release候補を作るprivacy buildでは、source / buildを個人情報や開発環境固有名を含まない
+短いstaging rootへ置き、`build-tools/msvc_privacy_toolchain.cmake` をconfigure時から
+使用してください。toolchainはMSVCのcompiler-identificationを含む全compileへ
+`/experimental:deterministic` と `/pathmap` を適用し、staging rootを `s` へ置換します。
+
 ```powershell
 $sm120 = (Resolve-Path 'v2/sm120').Path.Replace('\', '/')
 $build = "$sm120/build/public-gpu"
@@ -16,7 +21,11 @@ $cudaSdk = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.4'
 python "$sm120/build-tools/embed_images.py" --output $object
 if ($LASTEXITCODE -ne 0) { throw 'image generation failed' }
 
+$stageRoot = (Resolve-Path '.').Path.Replace('\', '/')
+
 cmake -S "$sm120/source" -B $build -G 'Visual Studio 17 2022' -A x64 `
+  "-DCMAKE_TOOLCHAIN_FILE=$sm120/build-tools/msvc_privacy_toolchain.cmake" `
+  "-DMONA2_PATHMAP_ROOT=$stageRoot" `
   -DMONA2_FROZEN_GPU=ON "-DMONA2_CUDA_ROOT=$cudaSdk" `
   "-DMONA2_IMAGE_OBJECT=$object" "-DMONA2_GENERATED_INCLUDE=$sm120/source/include"
 if ($LASTEXITCODE -ne 0) { throw 'configure failed' }
@@ -80,3 +89,22 @@ ctest --test-dir v2/sm120/build/cpu-mock -C Release --output-on-failure
 
 各コマンドのexit codeを確認してください。helper試験にはobject/header/payload改変、
 不正cubin、不正contractを拒否するCPU-only試験が含まれます。
+
+
+## Privacy build
+
+Release候補のprivacy gateでは、CMake configureより前にneutral staging rootを決め、
+そのrootを `MONA2_PATHMAP_ROOT` として渡してください。sourceとbuildを同じroot配下へ
+置くと1つのprefix mapで両方を覆えます。
+
+例:
+
+```powershell
+$stage = 'C:/mona-v201'
+cmake -S "$stage/src/v2/sm120/source" -B "$stage/build" -G 'Visual Studio 17 2022' -A x64 `
+  "-DCMAKE_TOOLCHAIN_FILE=$stage/src/v2/sm120/build-tools/msvc_privacy_toolchain.cmake" `
+  "-DMONA2_PATHMAP_ROOT=$stage" ...
+```
+
+toolchainを使わない通常の開発buildを禁止するものではありませんが、Release候補の
+privacy qualificationでは中間OBJを含めて絶対staging pathが残っていないことを確認してください。

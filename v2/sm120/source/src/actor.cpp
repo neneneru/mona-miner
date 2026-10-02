@@ -66,6 +66,13 @@ namespace mona2 {
         s<<std::defaultfloat<<std::setprecision(12)<<difficulty;
         human_locked(s.str());
     }
+    void AuditLog::mining_started(double difficulty){
+        if(json_)return;
+        std::lock_guard l(mutex_);
+        std::ostringstream s;
+        s<<"Mining started | diff "<<std::setprecision(12)<<difficulty;
+        human_locked(s.str());
+    }
     void AuditLog::share_total(Authority authority,Role role,std::uint64_t accepted,std::uint64_t rejected,double difficulty){
         if(json_){
             line("{\"event\":\"SHARE_TOTAL\",\"role\":"+json_quote(role_name(role))+",\"accepted\":"+std::to_string(accepted)+",\"rejected\":"+std::to_string(rejected)+"}");
@@ -120,6 +127,7 @@ namespace mona2 {
                 human_locked("Stratum authorized");
                 user_authorized_=true;
             }
+            if(code=="WAIT_JOB_AFTER_DIFFICULTY")human_locked("Waiting for next pool job...");
             return;
         }
         if(code=="CONNECTED"||code=="SUBSCRIBED"||code=="STOPPING"||code=="DEGRADED_BACKPRESSURE"||code=="DEGRADED_PENDING_CAPACITY")return;
@@ -246,7 +254,10 @@ namespace mona2 {
                         if(state.state!=last_state){
                             log_.event(authority_,state.state.c_str(),state.latest?state.latest->key.session.connection:0);
                             last_state=state.state;
-                            if(state.ready&&state.latest)log_.line("{\"event\":\"EFFECTIVE_DIFFICULTY\",\"authority\":"+json_quote(authority_==Authority::User?"USER":"DEVELOPER")+",\"difficulty\":"+std::to_string(state.latest->job.difficulty)+"}");
+                            if(state.ready&&state.latest){
+                                if(log_.json())log_.line("{\"event\":\"EFFECTIVE_DIFFICULTY\",\"authority\":"+json_quote(authority_==Authority::User?"USER":"DEVELOPER")+",\"difficulty\":"+std::to_string(state.latest->job.difficulty)+"}");
+                                else if(authority_==Authority::User)log_.mining_started(state.latest->job.difficulty);
+                            }
                         }
                         if(drained){
                             for(unsigned sends=0;sends<16;++sends){

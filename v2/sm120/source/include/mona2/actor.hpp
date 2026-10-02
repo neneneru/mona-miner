@@ -23,6 +23,7 @@ namespace mona2 {
         void console(std::string_view);
         void gpu_identity(int device,std::string_view identity_json);
         void summary(double mhs,std::uint64_t accepted,std::uint64_t rejected,double difficulty);
+        void mining_started(double difficulty);
         void share_total(Authority,Role,std::uint64_t accepted,std::uint64_t rejected,double difficulty);
         void reconnect_backoff(Authority,std::uint32_t milliseconds);
         void error(std::string_view);

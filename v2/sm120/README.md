@@ -96,8 +96,13 @@ Public v2ではDeveloper Feeを1行だけ追加表示します。
 [YYYY-MM-DD HH:MM:SS] GPU #0: NVIDIA GeForce RTX 5090, SM 12.0
 [YYYY-MM-DD HH:MM:SS] Developer Fee: 2%
 [YYYY-MM-DD HH:MM:SS] Stratum authorized
-[YYYY-MM-DD HH:MM:SS] 425.00 MH/s | accepted: 4/4 (+4) | diff 256
+[YYYY-MM-DD HH:MM:SS] Waiting for next pool job...
+[YYYY-MM-DD HH:MM:SS] Mining started | diff 2156.3256
+[YYYY-MM-DD HH:MM:SS] 425.00 MH/s | accepted: 4/4 (+4) | diff 2156.3256
 ```
+
+認証後に次のpool jobを待っている場合は待機状態を表示し、採掘開始時に
+server-provided difficultyを表示します。
 
 最初のMH/s集計は、Stratum handshakeやjob待ち時間を含めず、
 実際に採掘可能になってから開始します。job更新だけでは不要に集計windowをresetしません。
