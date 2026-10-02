@@ -4,7 +4,7 @@
 
 - SM120（RTX 50 シリーズ）向けの Public v2 実装です。
 - RTX 5090 / Windows 11 x64 / CUDA 13.4.x で実機検証しています。
-- 固定 Developer Fee 2% を採用し、Donation はありません。
+- 固定 Developer Fee 2% を採用しています。
 
 ## 対応環境
 
@@ -15,7 +15,6 @@
 ## 手数料
 
 - Developer Fee: 2%
-- Donation: なし
 - completed-work 基準: USER 98q → DEVFEE 2q（q = 64）
 
 debt / catch-up はありません。Developer 接続停止中に未実行となった Fee を
