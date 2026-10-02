@@ -85,6 +85,28 @@ BATへ保存したUSER worker / passwordは平文になるため、mining専用�
 Developer Feeの接続先認証情報は、公開前提のmining専用情報として
 `source/src/developer_destination.cpp` の1か所に集約しています。
 
+## Console出力
+
+通常起動ではPublic v1と同じ人間向けの集約表示を使用します。
+Public v2ではDeveloper Feeを1行だけ追加表示します。
+
+```text
+[YYYY-MM-DD HH:MM:SS] Mona Miner - Lyra2REv2
+[YYYY-MM-DD HH:MM:SS] Pool: stratum+tcp://HOST:PORT
+[YYYY-MM-DD HH:MM:SS] GPU #0: NVIDIA GeForce RTX 5090, SM 12.0
+[YYYY-MM-DD HH:MM:SS] Developer Fee: 2%
+[YYYY-MM-DD HH:MM:SS] Stratum authorized
+[YYYY-MM-DD HH:MM:SS] 425.00 MH/s | accepted: 4/4 (+4) | diff 256
+```
+
+最初のMH/s集計は、Stratum handshakeやjob待ち時間を含めず、
+実際に採掘可能になってから開始します。job更新だけでは不要に集計windowをresetしません。
+
+- 既定: 60秒ごとの集約表示
+- `--interval N`: 集約間隔を変更
+- `--all`: USER share結果を都度表示
+- `--json`: 検証・診断用の詳細JSON event stream
+
 ## 検証
 
 Public v2.0.0では以下を確認しています。
@@ -104,6 +126,11 @@ Public v2.0.0では以下を確認しています。
 - local stale / UNKNOWN / not-sent: 0
 - clean shutdown: exit 0
 - public package privacy scan: PASS
+
+v2.0.1候補のconsole/BAT変更はhost UXのみで、GPU backend、Fee accounting、
+Stratum protocol、qualified cubin、device-sourceは変更しません。
+新しいRelease binaryとして公開する前にWindows build / CPU tests / console表示 /
+短いGPU・実プール確認 / privacy scanを再実施します。
 
 30分の実プール検証A/BではUSER-side rejectを各1件観測しましたが、
 DEVFEE rejection、local stale、UNKNOWN、not-sentはありませんでした。

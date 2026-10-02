@@ -3,7 +3,7 @@
 #include "base.hpp"
 namespace mona2 {
     struct Options {
-        bool help=false,benchmark=false,all=false,credentials_stdin=false,credentials_cli=false;
+        bool help=false,benchmark=false,all=false,json=false,credentials_stdin=false,credentials_cli=false;
         unsigned interval=60;
         int device=0;
         std::uint32_t benchmark_batches=16;

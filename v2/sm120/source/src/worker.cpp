@@ -5,6 +5,7 @@
 namespace mona2 {
     void GpuWorker::run(std::optional<Time> until,std::optional<std::uint64_t> work_limit){
         auto last=Clock::now();
+        MiningRateWindow display;
         while(!stop_.requested()){
             if(until&&Clock::now()>=*until){
                 stop_.request();
@@ -25,6 +26,7 @@ namespace mona2 {
             bool u=uv&&uv->ready&&budget_.can_admit(),d=dv&&dv->ready;
             auto choice=quota_.choose(u,d,NonceSpace);
             if(!choice){
+                if(!u)display.reset();
                 stop_.wait(std::chrono::milliseconds(10));
                 continue;
             }
@@ -53,6 +55,8 @@ namespace mona2 {
                 ++metrics_.installs;
                 installed_serial_=work_[a]->serial;
             }
+            const auto& before=quota_.counters().committed;
+            display.start(Clock::now(),before[0]+before[1]);
             Assignment assignment{
                 work_[a],choice->role,next64(execution_),choice->segment,std::uint32_t(cursor_[a]),choice->count
             };
@@ -70,8 +74,7 @@ namespace mona2 {
                 auto t=Clock::now();
                 auto result=transaction.step(backend_,actor.mailbox(),quota_,admissible,[](const Words&w,std::uint32_t n){
                     return cpu_hash(w,n);
-                }
-                );
+                });
                 metrics_.scan_contract_seconds+=std::chrono::duration<double>(Clock::now()-t).count();
                 cursor_[a]=result.next;
                 if(result.blocked){
@@ -81,13 +84,23 @@ namespace mona2 {
                 }
                 if(result.cancelled)break;
             }
-            if(Clock::now()-last>=std::chrono::seconds(interval_)){
-                log_.line(summary());
-                last=Clock::now();
+            if(log_.json()){
+                if(Clock::now()-last>=std::chrono::seconds(interval_)){
+                    log_.line(summary());
+                    last=Clock::now();
+                }
+            }else if(!log_.all()){
+                const auto& committed=quota_.counters().committed;
+                if(auto mhs=display.sample(Clock::now(),committed[0]+committed[1],interval_)){
+                    const auto counts=user_.counts();
+                    const auto user_view=user_.view();
+                    const double difficulty=user_view&&user_view->latest?user_view->latest->job.difficulty:0.0;
+                    log_.summary(*mhs,counts.accepted[index(Role::User)],counts.rejected[index(Role::User)],difficulty);
+                }
             }
         }
         quota_.finish();
-        log_.line(summary());
+        if(log_.json())log_.line(summary());
     }
     std::string GpuWorker::summary()const{
         const auto ended=Clock::now();

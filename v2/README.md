@@ -59,6 +59,9 @@ mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS
 Release package にはVIP Pool向けの起動例として `start_vippool.bat` を同梱します。
 BATの利用は必須ではなく、対応するStratum poolをCLIから指定して起動できます。
 
+通常のconsole出力はPublic v1と同じ60秒集約表示を基本とします。
+詳細なJSON event streamは `--json` で利用できます。
+
 ## 共通ポリシー
 
 - 隠し / 予備プールへの接続、テレメトリ送信、自動更新確認はありません。

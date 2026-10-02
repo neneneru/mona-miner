@@ -1,16 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "mona2/actor.hpp"
+#include "mona2/json.hpp"
 #include <algorithm>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 namespace mona2 {
+    void AuditLog::human_locked(std::string_view message){
+        char stamp[32]{};
+        const auto now=std::time(nullptr);
+        std::tm tm{};
+#ifdef _WIN32
+        localtime_s(&tm,&now);
+#else
+        localtime_r(&now,&tm);
+#endif
+        std::strftime(stamp,sizeof(stamp),"%Y-%m-%d %H:%M:%S",&tm);
+        std::cout<<'['<<stamp<<"] "<<message<<std::endl;
+    }
     void AuditLog::secret(std::string s){
         if(s.empty())return;
         std::lock_guard l(mutex_);
         secrets_.push_back(std::move(s));
         std::sort(secrets_.begin(),secrets_.end(),[](auto&a,auto&b){
             return a.size()>b.size();
-        }
-        );
+        });
     }
     std::string AuditLog::sanitize(std::string_view in)const{
         std::lock_guard l(mutex_);
@@ -24,11 +39,98 @@ namespace mona2 {
         }
         return escape_controls(s);
     }
-    void AuditLog::event(Authority a,const char*c,std::uint64_t conn){
+    void AuditLog::console(std::string_view message){
+        if(json_)return;
         std::lock_guard l(mutex_);
-        std::cout<<"{\"event\":"<<json_quote(c)<<",\"monotonic_ns\":\""<<std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now().time_since_epoch()).count()<<"\",\"authority\":"<<json_quote(a==Authority::User?"USER":"DEVELOPER")<<",\"connection\":\""<<conn<<"\"}"<<std::endl;
+        human_locked(message);
+    }
+    void AuditLog::gpu_identity(int device,std::string_view identity_json){
+        if(json_){
+            line(identity_json);
+            return;
+        }
+        auto j=parse_json(identity_json);
+        auto sm=json_uint(member(j.get(),"SM"),999);
+        auto name=json_string(member(j.get(),"name"),256,false);
+        std::ostringstream s;
+        s<<"GPU #"<<device<<": "<<name<<", SM "<<sm/10<<'.'<<sm%10;
+        console(s.str());
+    }
+    void AuditLog::summary(double mhs,std::uint64_t accepted,std::uint64_t rejected,double difficulty){
+        if(json_)return;
+        std::lock_guard l(mutex_);
+        const auto delta=accepted>=last_summary_accepted_?accepted-last_summary_accepted_:accepted;
+        last_summary_accepted_=accepted;
+        std::ostringstream s;
+        s<<std::fixed<<std::setprecision(2)<<mhs<<" MH/s | accepted: "<<accepted<<'/'<<(accepted+rejected)<<" (+"<<delta<<") | diff ";
+        s<<std::defaultfloat<<std::setprecision(12)<<difficulty;
+        human_locked(s.str());
+    }
+    void AuditLog::share_total(Authority authority,Role role,std::uint64_t accepted,std::uint64_t rejected,double difficulty){
+        if(json_){
+            line("{\"event\":\"SHARE_TOTAL\",\"role\":"+json_quote(role_name(role))+",\"accepted\":"+std::to_string(accepted)+",\"rejected\":"+std::to_string(rejected)+"}");
+            return;
+        }
+        if(!all_||authority!=Authority::User||role!=Role::User)return;
+        std::lock_guard l(mutex_);
+        std::ostringstream s;
+        if(accepted>last_share_accepted_){
+            s<<"accepted: "<<accepted<<'/'<<(accepted+rejected)<<" (diff "<<std::setprecision(12)<<difficulty<<"), yes!";
+        }else if(rejected>last_share_rejected_){
+            s<<"rejected: "<<rejected<<'/'<<(accepted+rejected);
+        }else{
+            return;
+        }
+        last_share_accepted_=accepted;
+        last_share_rejected_=rejected;
+        human_locked(s.str());
+    }
+    void AuditLog::reconnect_backoff(Authority authority,std::uint32_t milliseconds){
+        if(json_){
+            line("{\"event\":\"RECONNECT_BACKOFF\",\"authority\":"+json_quote(authority==Authority::User?"USER":"DEVELOPER")+",\"milliseconds\":"+std::to_string(milliseconds)+"}");
+            return;
+        }
+        if(authority!=Authority::User)return;
+        std::ostringstream s;
+        s<<"Stratum reconnecting in "<<std::fixed<<std::setprecision(1)<<(double(milliseconds)/1000.0)<<" s";
+        console(s.str());
+    }
+    void AuditLog::error(std::string_view code){
+        if(json_){
+            event(Authority::User,std::string(code).c_str());
+            return;
+        }
+        console("ERROR: "+std::string(code));
+    }
+    void AuditLog::event(Authority a,const char*c,std::uint64_t conn){
+        if(json_){
+            std::lock_guard l(mutex_);
+            std::cout<<"{\"event\":"<<json_quote(c)<<",\"monotonic_ns\":\""<<std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now().time_since_epoch()).count()<<"\",\"authority\":"<<json_quote(a==Authority::User?"USER":"DEVELOPER")<<",\"connection\":\""<<conn<<"\"}"<<std::endl;
+            return;
+        }
+        if(a!=Authority::User)return;
+        std::lock_guard l(mutex_);
+        const std::string_view code(c);
+        if(code=="CONNECTING"){
+            user_authorized_=false;
+            return;
+        }
+        if(code=="AUTHORIZED_WAIT_DIFFICULTY"||code=="WAIT_JOB_AFTER_DIFFICULTY"||code=="READY"){
+            if(!user_authorized_){
+                human_locked("Stratum authorized");
+                user_authorized_=true;
+            }
+            return;
+        }
+        if(code=="CONNECTED"||code=="SUBSCRIBED"||code=="STOPPING"||code=="DEGRADED_BACKPRESSURE"||code=="DEGRADED_PENDING_CAPACITY")return;
+        if(code=="JOB_LEASE_90_SECOND_WARNING"){
+            human_locked("Stratum warning: job lease reached 90 seconds");
+            return;
+        }
+        human_locked("Stratum error: "+std::string(code));
     }
     void AuditLog::line(std::string_view s){
+        if(!json_)return;
         std::lock_guard l(mutex_);
         std::cout<<s<<std::endl;
     }
@@ -62,10 +164,8 @@ namespace mona2 {
         thread_=std::jthread([this](std::stop_token token){
             std::stop_callback cb(token,[this]{
                 stop_.request();
-            }
-            );run();
-        }
-        );
+            });run();
+        });
     }
     void SessionActor::join(){
         if(thread_.joinable())thread_.join();
@@ -107,8 +207,6 @@ namespace mona2 {
                         auto now=Clock::now();
                         if(stop_.requested()&&!stop_at)stop_at=now+std::chrono::seconds(5);
                         if(stop_at&&now>=*stop_at)break;
-                        // Apply all buffered complete control frames before share admission. If a
-                        // read turn hits the byte budget, skip writes and continue draining.
                         std::array<char,8192> bytes{};
                         std::size_t read=0;
                         bool drained=false;
@@ -123,7 +221,13 @@ namespace mona2 {
                             protocol_.receive(std::string_view(bytes.data(),*n),now);
                             if(all_){
                                 const auto&after=protocol_.counts();
-                                for(unsigned ri=0;ri<RoleCount;++ri)if(before.accepted[ri]!=after.accepted[ri]||before.rejected[ri]!=after.rejected[ri])log_.line("{\"event\":\"SHARE_TOTAL\",\"role\":"+json_quote(role_name(Role(ri)))+",\"accepted\":"+std::to_string(after.accepted[ri])+",\"rejected\":"+std::to_string(after.rejected[ri])+"}");
+                                auto state=protocol_.view(now);
+                                const double difficulty=state.latest?state.latest->job.difficulty:0.0;
+                                for(unsigned ri=0;ri<RoleCount;++ri){
+                                    if(before.accepted[ri]!=after.accepted[ri]||before.rejected[ri]!=after.rejected[ri]){
+                                        log_.share_total(authority_,Role(ri),after.accepted[ri],after.rejected[ri],difficulty);
+                                    }
+                                }
                             }
                         }
                         protocol_.tick(now);
@@ -178,7 +282,6 @@ namespace mona2 {
                     log_.event(authority_,"ACTOR_RUNTIME_EXCEPTION");
                     stop_.request();
                 }
-                // Socket/overlapped objects are destroyed only by this owner.
                 protocol_.disconnect();
                 transport.close();
                 if(retained){
@@ -195,11 +298,9 @@ namespace mona2 {
                 if(Clock::now()-began>=std::chrono::seconds(30))failures=0;
                 failures=std::min(failures+1,10u);
                 auto delay=backoff_ms(failures,random_);
-                log_.line("{\"event\":\"RECONNECT_BACKOFF\",\"authority\":"+json_quote(authority_==Authority::User?"USER":"DEVELOPER")+",\"milliseconds\":"+std::to_string(delay)+"}");
+                log_.reconnect_backoff(authority_,delay);
                 stop_.wait(std::chrono::milliseconds(delay));
             }
-            // No producer reservation is closed underneath an unfinished GPU scan. Queued
-            // candidates arriving during shutdown are counted explicitly as not sent.
             while(auto c=mailbox_.pop())protocol_.unsent(c->assignment.role);
             publish(Clock::now(),true);
         }

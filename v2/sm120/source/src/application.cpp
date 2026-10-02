@@ -11,9 +11,7 @@
 #endif
 namespace mona2 {
     namespace {
-        std::atomic<StopSignal*> console_stop{
-            nullptr
-        };
+        std::atomic<StopSignal*> console_stop{nullptr};
 #ifdef _WIN32
         BOOL WINAPI on_console(DWORD code){
             if(code==CTRL_C_EVENT||code==CTRL_BREAK_EVENT||code==CTRL_CLOSE_EVENT||code==CTRL_SHUTDOWN_EVENT){
@@ -48,11 +46,10 @@ namespace mona2 {
     }
     int run_application(Options o,std::optional<std::chrono::seconds> duration){
         if(o.help){
-            std::cout<<"Mona Miner v2 - Monacoin Lyra2REv2\nUsage:\n  mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS [--device N] [--shares-limit N] [--all] [--interval N]\n  mona-miner.exe -a lyra2v2 --benchmark [--device N] [--benchmark-batches N]\nDeveloper Fee: 2.00% of completed unique local work.\nOnly lyra2v2 is supported; benchmark/help create no network connection.\n";
+            std::cout<<"Mona Miner v2 - Monacoin Lyra2REv2\nUsage:\n  mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS [--device N] [--shares-limit N] [--all] [--interval N] [--json]\n  mona-miner.exe -a lyra2v2 --benchmark [--device N] [--benchmark-batches N]\nConsole output:\n  default       v1-style 60-second aggregate summary\n  --all         print every USER share result\n  --interval N  aggregate summary interval in seconds (1..86400; default 60)\n  --json        diagnostic JSON event stream\nDeveloper Fee: 2.00% of completed unique local work.\nOnly lyra2v2 is supported; benchmark/help create no network connection.\n";
             return 0;
         }
         if(o.benchmark){
-            // Branch before stdin credentials, WSA, resolver, actor or socket construction.
             FrozenBackend gpu(o.device);
             Work w{};
             w.target={};
@@ -65,19 +62,11 @@ namespace mona2 {
             const auto start=Clock::now();
             for(std::uint64_t i=0;i<o.benchmark_batches;++i){
                 auto work=std::make_shared<Work>(w);
-                Assignment a{
-                    work,Role::User,i+1,0,std::uint32_t((i%4096)*NativeBatch),NativeBatch
-                };
+                Assignment a{work,Role::User,i+1,0,std::uint32_t((i%4096)*NativeBatch),NativeBatch};
                 accounting.scheduled(Role::User,NativeBatch);
                 RangeTransaction t(a);
                 while(!t.done()){
-                    auto r=t.step(gpu,output,accounting,[]{
-                        return true;
-                    }
-                    ,[](const Words&x,std::uint32_t n){
-                        return cpu_hash(x,n);
-                    }
-                    );
+                    auto r=t.step(gpu,output,accounting,[]{return true;},[](const Words&x,std::uint32_t n){return cpu_hash(x,n);});
                     executed=add64(executed,r.actual);
                     completed+=Count(r.committed);
                     while(output.pop()){}
@@ -88,7 +77,11 @@ namespace mona2 {
             return 0;
         }
         if(o.credentials_stdin)read_credentials(o);
-        AuditLog log;
+        AuditLog log(o.json,o.all);
+        if(!o.json){
+            log.console("Mona Miner - Lyra2REv2");
+            log.console("Pool: "+o.user.endpoint.canonical());
+        }
         log.secret(o.user.endpoint.canonical());
         log.secret(o.user.worker);
         log.secret(o.user.password);
@@ -96,12 +89,11 @@ namespace mona2 {
         ConsoleGuard console(stop);
         NetworkRuntime sockets;
         FrozenBackend backend(o.device);
-        log.line(backend.identity());
-        log.line("{\"event\":\"POLICY\",\"developer_fee_percent\":2,\"debt_carry_forward\":false}");
+        log.gpu_identity(o.device,backend.identity());
+        if(o.json)log.line("{\"event\":\"POLICY\",\"developer_fee_percent\":2,\"debt_carry_forward\":false}");
+        else log.console("Developer Fee: 2%");
         ShareBudget budget(o.shares_limit);
-        std::atomic<bool> producer_done{
-            false
-        };
+        std::atomic<bool> producer_done{false};
         const auto run=static_cast<std::uint64_t>(Clock::now().time_since_epoch().count())|1;
         SessionActor user(run,Authority::User,o.user,budget,stop,producer_done,log,false,o.all);
         SessionActor developer(run,Authority::Developer,developer_credentials(),budget,stop,producer_done,log,false,o.all);
@@ -113,19 +105,17 @@ namespace mona2 {
             worker.run(duration?std::optional<Time>(Clock::now()+*duration):std::nullopt);
         }
         catch(const Error&e){
-            log.event(Authority::User,e.what());
+            log.error(e.what());
             code=2;
         }
         catch(const std::exception&){
-            log.event(Authority::User,"WORKER_UNEXPECTED_ERROR");
+            log.error("WORKER_UNEXPECTED_ERROR");
             code=2;
         }
         producer_done.store(true);
         stop.request();
         user.join();
         developer.join();
-        // Actor deadline may expire before a slow GPU leaf completes. Reconcile the
-        // remaining queue after both its producer and consumer have terminated.
         user.finalize_queue();
         developer.finalize_queue();
         log.line(network_summary(Authority::User,user.counts()));

@@ -21,6 +21,7 @@ namespace mona2 {
             if(k=="--help")o.help=true;
             else if(k=="--benchmark")o.benchmark=true;
             else if(k=="--all")o.all=true;
+            else if(k=="--json")o.json=true;
             else if(k=="--credentials-stdin")o.credentials_stdin=true;
             else if(k=="--algo")o.algo=val();
             else if(k=="--url")o.user.endpoint=endpoint(val());
