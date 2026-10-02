@@ -17,101 +17,124 @@
 - Developer Fee: 2%
 - completed-work 基準: USER 98q → DEVFEE 2q（q = 64）
 
-debt / catch-up はありません。Developer 接続停止中に未実行となった Fee を
-復旧後に追加回収しません。USER mining が利用できない場合は、DEVFEE-only の
-GPU mining を継続しません。
+Developer 接続が利用できない場合も USER mining を継続します。
+未実行のFeeをdebtとして持ち越さず、復旧後のcatch-upも行いません。
+USER mining が利用できない場合は、DEVFEE-only のGPU miningを継続しません。
+
+## 主な最適化
+
+Public v2 SM120 の最終構成は以下です。
+
+```text
+N02 + EXP01 + R02_CUBE2_TAIL_FUSION_B64
+```
+
+主な改善は、GPU処理ステージ間の境界削減、同じ処理主体で完結できる範囲の融合、
+不要な中間表現・転送の削減、後段tail処理の融合です。
+
+最終tail fusionの採用判断では、直前のaccepted構成との対応比較24組で
+**24/24が改善し、MH/s改善率中央値は約 +0.886%** でした。
+
+この約 +0.886% はtail optimization単体の採用根拠です。
+Public v1からPublic v2への最終的な製品性能差や、各最適化の単純合計を示す値ではありません。
 
 ## パフォーマンス
 
-30分の実プール検証を2回実施しています。
+RTX 5090で30分の実プール検証を2回実施しています。
 
-- Run A: 423.778 MH/s total / 415.352 MH/s USER 実効
-- Run B: 426.614 MH/s total / 418.114 MH/s USER 実効
-- 代表値: 約425 MH/s total / 約417 MH/s USER 実効
-- Public v1 SM120 約395.93 MH/s比: total 約+7.3% / USER 実効 約+5.3%
+| Run | Total MH/s | USER実効 MH/s | Fee work | 平均board W | Board MH/J |
+|---|---:|---:|---:|---:|---:|
+| A | 423.778 | 415.352 | 1.9883% | 437.10 | 0.9694 |
+| B | 426.614 | 418.114 | 1.9925% | 438.60 | 0.9726 |
 
-## Frozen SM120 backend
+代表値は約425 MH/s total / 約417 MH/s USER実効です。
+Public v1 SM120 約395.93 MH/s比では、total 約 +7.3%、USER実効 約 +5.3% です。
 
-Composition: `N02 + EXP01 + R02_CUBE2_TAIL_FUSION_B64`
+上記はRTX 5090と検証環境における実測値であり、すべてのSM120 GPUで同一性能を保証するものではありません。
 
-Qualified privacy-sanitized cubins:
+## Qualified GPU image / source
+
+Public v2.0.0で使用するprivacy-sanitized cubinは以下の3本です。
 
 - N02_EXP01_PRODUCER: `9463bb3d1242371f7ebaef19aa528b63debeb6fdc2fc900f8f1a0d8e7d85ec19`
 - R02_ACCEPTED: `c9a9a6872df92f529b88cf6a80eabb925b515c76a1c4a3791788a52afb7e8a84`
 - R02_CUBE2_TAIL_FUSION: `84f3b1b105a7cb4df7dec50968e3ea81e2c4a0c97f83afe4872e413376f5e2bd`
 
-Exact corresponding device source is included under `device-source/`.
-Sanitization changed debug/source-path metadata only; runtime/device code was
-revalidated before GPU/live qualification.
+対応するdevice sourceは `device-source/` に収録しています。
+privacy sanitizationで変更したのはdebug/source-path metadataのみで、runtime/device codeの不変性を確認したうえでGPU・実プール検証を行っています。
 
-## 起動 / USER pool credentials
+## 起動 / USER pool認証情報
 
-Public v2 は Public v1 と同じ通常CLIをサポートします。
+Public v1 と同じ通常CLIを使用できます。
 
 ```text
 mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS
 ```
 
 `-o / --url`、`-u / --user`、`-p / --pass` を使用できます。
-`-p / --pass` の要否は接続先poolの仕様に従います。VIP Poolを利用する一般的な
-ケースではpasswordを指定します。
+`-p / --pass` の要否は接続先poolの仕様に従います。
 
-Release package の `start_vippool.bat` はVIP Pool向けの便利な起動例です。
+Release package の `start_vippool.bat` はVIP Pool向けの起動例です。
 BATの利用は必須ではなく、対応するStratum poolをCLIから指定して直接起動できます。
-BATへ保存したUSER worker / passwordは平文になるため、mining専用の認証情報を
-使用してください。
+BATへ保存したUSER worker / passwordは平文になるため、mining専用の認証情報を使用してください。
 
-`--credentials-stdin` は既存のvalidation / automation互換用として引き続き
-サポートしますが、通常利用では必須ではありません。CLI credential modeと
-`--credentials-stdin` の同時指定は拒否します。
+`--credentials-stdin` はvalidation / automation互換用として保持しています。
+通常利用では必須ではなく、CLI credential modeとの同時指定は拒否します。
 
-The Developer destination is intentionally public mining-only authentication and
-is centralized in `source/src/developer_destination.cpp`.
+Developer destinationは公開用のmining専用認証情報で、
+`source/src/developer_destination.cpp` の1か所に集約しています。
 
-## Validation
+## 検証
 
-GPU correctness and Compute Sanitizer memcheck/racecheck/initcheck/synccheck:
-**PASS**.
+Public v2.0.0では以下を確認しています。
 
-Controlled GPU Local `DEVFEE_ONLY_FSA / USER_ONLY_HARNESS` total-throughput
-paired median: approximately **-0.006%**.
+- GPU correctness: PASS
+- Compute Sanitizer: memcheck / racecheck / initcheck / synccheck PASS
+- controlled GPU Local `DEVFEE_ONLY_FSA / USER_ONLY_HARNESS`: total-throughput paired median差 約 -0.006%
+- Windows 11 x64 / MSVC 19.44 / CUDA 13.4.x build: PASS
+- public image-object helper: 2/2 PASS
+- CPU/mock CTest: 8/8 PASS
+- CLI acceptance: 20/20 PASS
+- linked qualified GPU payload verification: PASS
+- RTX 5090 correctness: 4,232 CPU comparisons / canary checks / 3 qualified modules load PASS
+- direct `-o/-u/-p` VIP Pool live gate: PASS
+- USER accepted: 1 / rejected: 0
+- USER / Developer: connect 1 each / reconnect 0
+- local stale / UNKNOWN / not-sent: 0
+- clean shutdown: exit 0
+- public package privacy scan: PASS
 
-Two 30-minute DEVFEE-only live runs:
+30分の実プール検証A/BではUSER-side rejectを各1件観測しましたが、
+DEVFEE rejection、local stale、UNKNOWN、not-sentはありませんでした。
+その後のpersistent-session diagnosticではUSER submit 355/355 accepted、reconnect 0を確認しており、
+再現性のあるminer defectやrelease blockerとは分類していません。
 
-| Run | Total MH/s | USER-effective MH/s | Fee work | Mean board W | Board MH/J |
-|---|---:|---:|---:|---:|---:|
-| A | 423.778 | 415.352 | 1.9883% | 437.10 | 0.9694 |
-| B | 426.614 | 418.114 | 1.9925% | 438.60 | 0.9726 |
+## ソースとRelease identity
 
-Public v1 SM120 reference: about **395.93 MH/s** with no fee. These v2 runs are
-about **+4.91%** and **+5.60% USER-effective** versus that reference.
+Public v2.0.0のGit tagは `sm120-v2.0.0` です。
 
-Each live run observed one low-frequency non-stale USER pool rejection. No
-DEVFEE rejection, local stale, UNKNOWN or not-sent share was recorded. A later
-persistent-session diagnostic forwarded **355/355 USER submits accepted** with
-no rejection. The condition is retained as operational monitoring context, not
-classified as a reproducible miner defect.
+最終Release executable SHA256:
 
-## Source identity
+```text
+D2E172A34871287B9C120D6502F1C966899AB923F7BE5E0D5A0FF3DDC9DE3386
+```
 
-The frozen GPU backend, qualified cubins and corresponding device-source remain
-unchanged. Public v2 adds a host-only v1-compatible USER CLI
-(`-o / -u / -p` and long aliases); this does not alter the GPU launch contract,
-98q/2q accounting, Stratum session implementation or Developer destination.
+CLI互換修正ではqualified cubin、device-source、GPU backend、
+98q/2q accounting、Stratum/session、Developer destinationを変更していません。
+検証済みsourceとbinaryのprovenanceは `SOURCE_SCOPE.json` に記録しています。
 
-The pre-CLI-compatibility validation identity and the scope of this host-only
-compatibility change are recorded in `SOURCE_SCOPE.json`. The exact rebuilt
-release executable must be requalified before tag / Release publication.
-A rebuilt cubin is not silently treated as the qualified image.
+Release後に同じsourceから再buildしたbinaryでも、byte identityが異なる場合は
+自動的にPublic v2.0.0の検証済みbinaryと同一とは扱いません。
 
-`source/shipping_docs/README.md` の `private product prototype` / `review prototype`
-表記は、validated host tree の byte identity を保持するために保存した
-validation-era snapshot の歴史的文面です。現在の Public v2 の release status を
-示すものではありません。公開状況は repository / PR / GitHub Releases を確認してください。
+`source/shipping_docs/README.md` に残る `private product prototype` / `review prototype`
+という表記は、validation時点のhost treeを保持するための歴史的文面です。
+現在の公開状態を示すものではありません。
 
-## Public GPU executable build
+## Public GPUビルド
 
-public repo の qualified cubins 3本から image object を生成する手順を
-[build-tools/README.md](build-tools/README.md) に記載しています。
-private sealed runner は不要です。frozen `source/` と cubin bytes は変更せず、
-既存の `MONA2_IMAGE_OBJECT` / `MONA2_GENERATED_INCLUDE` 引数を満たします。
+public repoのqualified cubin 3本からimage objectを生成し、
+GPU executableをbuildする手順は [build-tools/README.md](build-tools/README.md) に記載しています。
+
+private sealed runnerは不要です。
+qualified cubinとfrozen sourceを変更せず、既存の
+`MONA2_IMAGE_OBJECT` / `MONA2_GENERATED_INCLUDE` を指定してbuildします。

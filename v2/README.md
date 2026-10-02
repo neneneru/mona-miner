@@ -33,17 +33,17 @@ RTX 5090 の30分実プール検証では、2回の測定で以下を確認し�
 上記は実機検証した RTX 5090 とその検証環境における値です。
 すべての SM120 GPU で同一性能を保証するものではありません。
 
-## 主な改善内容
+## 主な最適化
 
-Public v2 SM120 の frozen backend は以下の構成です。
+Public v2 SM120 の最終構成は以下です。
 
 `N02 + EXP01 + R02_CUBE2_TAIL_FUSION_B64`
 
-主な方向性は、GPU処理ステージ間の境界削減、同一ownerで処理できる範囲の融合、
-不要な中間表現・転送の削減、counter-effect を抑えた tail fusion です。
+GPU処理ステージ間の境界削減、同じ処理主体で完結できる範囲の融合、
+不要な中間表現・転送の削減、後段tail処理の融合を行っています。
 
-詳細な GPU image / source provenance、検証済みSHA256、正しさ試験、
-Compute Sanitizer、live-pool validation は [SM120 README](sm120/) を確認してください。
+詳細なGPU image / source provenance、検証済みSHA256、正しさ試験、
+Compute Sanitizer、実プール検証は [SM120 README](sm120/) を確認してください。
 
 ## 起動
 
