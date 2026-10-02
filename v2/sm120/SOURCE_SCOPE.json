@@ -1,0 +1,383 @@
+{
+  "schema": "mona2.public-v2-sm120-source-scope.v1",
+  "release_line": "Public v2",
+  "architecture": "SM120",
+  "validated_gpu": "NVIDIA GeForce RTX 5090",
+  "cuda_baseline": "13.4.x",
+  "source_authority": {
+    "source_tag": "sm120-v2.0.1",
+    "released_executable_sha256": "9a3ffbe32924c5f227b90daf3bd55993de3e2a32c24b1f38f07cd90e752cb800",
+    "released_zip_sha256": "365e98126d50ce6b14549663c0df2de97fb9f2658c04a6f1977940ba440eb3c5",
+    "released_sidecar_sha256": "fa023da4a214fa9212329671dad372eadcb1eada505c3e66615f8fe4d97fefd1"
+  },
+  "device_sources": {
+    "N02_EXP01_PRODUCER": {
+      "tree_sha256": "9c0c8f925aab12edb0e2d8c89313075f837ffcd904dbfe83f8c8fe91cde2e9a8",
+      "files": [
+        {
+          "path": "entry.cu",
+          "bytes": 68,
+          "sha256": "4703c808ad4f0c1171eeb1a3496e6fb932a85ac3c18f19f712d2c5ee451ef79b"
+        },
+        {
+          "path": "generated/UPSTREAM_LICENSE.txt",
+          "bytes": 47399,
+          "sha256": "8387fb7fc6abf3fe03ccb3ae3229ce695fff02ac667d0105899d91f5cbd8fae2"
+        },
+        {
+          "path": "generated/cuda_helper.h",
+          "bytes": 20083,
+          "sha256": "3f518612b25422a7b7826262c574a68a30419731d40b08af58feae7629053798"
+        },
+        {
+          "path": "generated/cuda_lyra2_vectors.h",
+          "bytes": 23652,
+          "sha256": "4e8455b66219a2f7db6a2036b4b6588410189341986c9685053e87d525bdfc7c"
+        },
+        {
+          "path": "generated/upstream_blake.cuh",
+          "bytes": 15244,
+          "sha256": "190477a42d5176f5bb2e4617f93b62dfbc45675646ffd8af7cbedb7dc06ca243"
+        },
+        {
+          "path": "generated/upstream_bmw.cuh",
+          "bytes": 11108,
+          "sha256": "2eab9281329958cff3efce621216a37724186759c6d7b78e7ae67cdc7e9275d0"
+        },
+        {
+          "path": "generated/upstream_cube.cuh",
+          "bytes": 15459,
+          "sha256": "f8429d51c86c4246ab85b6abc90a403cd5d3b49499dca82a9ea4dc2492142ee3"
+        },
+        {
+          "path": "generated/upstream_lyra.cuh",
+          "bytes": 14493,
+          "sha256": "9531bea85d67a3861fdefd7d32352a20d7897d57a7baf9f62bdecadb925fd029"
+        },
+        {
+          "path": "generated/upstream_skein.cuh",
+          "bytes": 5699,
+          "sha256": "dfae30afa89c3fecc75f2621e4d958161b93315a426cd2249a83a4509d7c821f"
+        },
+        {
+          "path": "include/mona/core.hpp",
+          "bytes": 2244,
+          "sha256": "8447b66bf7f9bfbfc6a91ceb13c8647ae4f500000329e050a0790b9e5efd79f8"
+        },
+        {
+          "path": "include/mona/measured_defaults.hpp",
+          "bytes": 1342,
+          "sha256": "f46c55b1db854ffbb74a83bde9be771fdefb85ef69a137a8f40d45b358baf904"
+        },
+        {
+          "path": "src/cube.cuh",
+          "bytes": 1679,
+          "sha256": "cbdc8123d88e1e99b3e3c9f0782881002615e0c3b6f1381423e50ba14c4de6d6"
+        },
+        {
+          "path": "src/lyra.cuh",
+          "bytes": 7999,
+          "sha256": "00ef11d54b27bd29a7ee21abf002d3b9c116f241f0032375be827ead9c069c58"
+        },
+        {
+          "path": "src/n02_blake_job_columns.cuh",
+          "bytes": 10266,
+          "sha256": "5285ce1b326d4c7479f580803d124f58b81c0ec82cc7fceec4eec71d6a27c36c"
+        },
+        {
+          "path": "src/pipeline.cu",
+          "bytes": 14674,
+          "sha256": "44423deacfc05766d104f4689bbfb569379bc02d38a58f4ec8d4d3bd1e8f25c0"
+        },
+        {
+          "path": "upstream/sph/sph_blake.h",
+          "bytes": 10681,
+          "sha256": "2631deceb66967c41a80ea75e8500d833311f1fafb2a87f8cd20d91fa5d06581"
+        },
+        {
+          "path": "upstream/sph/sph_types.h",
+          "bytes": 66236,
+          "sha256": "0a87bd456362fef5f39f1b3541e9e7ecfc0305be2ea89d804fd4e65585b19db9"
+        }
+      ]
+    },
+    "R02_ACCEPTED": {
+      "tree_sha256": "967e8181a1918d63725b0aff52ec55c93788163a7f282812dd79917c62053e6a",
+      "files": [
+        {
+          "path": "entry.cu",
+          "bytes": 27,
+          "sha256": "3c966fc71f24ed919c254b1216d849c0719a73a89ba615c587922deffe63f4a7"
+        },
+        {
+          "path": "generated/UPSTREAM_LICENSE.txt",
+          "bytes": 47399,
+          "sha256": "8387fb7fc6abf3fe03ccb3ae3229ce695fff02ac667d0105899d91f5cbd8fae2"
+        },
+        {
+          "path": "generated/cuda_helper.h",
+          "bytes": 20083,
+          "sha256": "3f518612b25422a7b7826262c574a68a30419731d40b08af58feae7629053798"
+        },
+        {
+          "path": "generated/cuda_lyra2_vectors.h",
+          "bytes": 23652,
+          "sha256": "4e8455b66219a2f7db6a2036b4b6588410189341986c9685053e87d525bdfc7c"
+        },
+        {
+          "path": "generated/upstream_blake.cuh",
+          "bytes": 15244,
+          "sha256": "190477a42d5176f5bb2e4617f93b62dfbc45675646ffd8af7cbedb7dc06ca243"
+        },
+        {
+          "path": "generated/upstream_bmw.cuh",
+          "bytes": 11108,
+          "sha256": "2eab9281329958cff3efce621216a37724186759c6d7b78e7ae67cdc7e9275d0"
+        },
+        {
+          "path": "generated/upstream_cube.cuh",
+          "bytes": 15459,
+          "sha256": "f8429d51c86c4246ab85b6abc90a403cd5d3b49499dca82a9ea4dc2492142ee3"
+        },
+        {
+          "path": "generated/upstream_lyra.cuh",
+          "bytes": 14493,
+          "sha256": "9531bea85d67a3861fdefd7d32352a20d7897d57a7baf9f62bdecadb925fd029"
+        },
+        {
+          "path": "generated/upstream_skein.cuh",
+          "bytes": 5699,
+          "sha256": "dfae30afa89c3fecc75f2621e4d958161b93315a426cd2249a83a4509d7c821f"
+        },
+        {
+          "path": "include/mona/core.hpp",
+          "bytes": 2244,
+          "sha256": "8447b66bf7f9bfbfc6a91ceb13c8647ae4f500000329e050a0790b9e5efd79f8"
+        },
+        {
+          "path": "include/mona/measured_defaults.hpp",
+          "bytes": 1342,
+          "sha256": "f46c55b1db854ffbb74a83bde9be771fdefb85ef69a137a8f40d45b358baf904"
+        },
+        {
+          "path": "src/cube.cuh",
+          "bytes": 1679,
+          "sha256": "cbdc8123d88e1e99b3e3c9f0782881002615e0c3b6f1381423e50ba14c4de6d6"
+        },
+        {
+          "path": "src/cuda_ops.cuh",
+          "bytes": 1676,
+          "sha256": "a1faf678183f4d8e73d84c5304da42fd7c0f3ba1d8526469d580cf3d02f585cc"
+        },
+        {
+          "path": "src/lane_constants.hpp",
+          "bytes": 844,
+          "sha256": "9536eb627eac2ad72d7424df657c89c05ac8dfdcf2882b4bee07f4dfe2588089"
+        },
+        {
+          "path": "src/lyra.cuh",
+          "bytes": 7999,
+          "sha256": "00ef11d54b27bd29a7ee21abf002d3b9c116f241f0032375be827ead9c069c58"
+        },
+        {
+          "path": "src/lyra_core.hpp",
+          "bytes": 6750,
+          "sha256": "f6fb7fab9bf1c1e86837f3ce35f2e8ed70d8d6b89fd1d94951fb67a0793e4086"
+        },
+        {
+          "path": "src/pipeline.cu",
+          "bytes": 12713,
+          "sha256": "e78251d53236cf676187492af639c7adf47e9107da96cd539803f8b5f42f6bdd"
+        },
+        {
+          "path": "src/r02_bridge.cuh",
+          "bytes": 1368,
+          "sha256": "2f0d5e59ac33936cef1b739d4ee52fc51b92929740f1d24096d65191dd856e37"
+        },
+        {
+          "path": "src/r02_skein_registers.cuh",
+          "bytes": 2516,
+          "sha256": "b5613725b19aa8d82b917def6136b423b617d3f00ec77b99351edfbc08da00e8"
+        },
+        {
+          "path": "src/transpose4.hpp",
+          "bytes": 951,
+          "sha256": "8ff5719bd69b9bc94f5964107a5789fc8b0e30a983f962e019c4c402db3070a2"
+        },
+        {
+          "path": "upstream/sph/sph_blake.h",
+          "bytes": 10681,
+          "sha256": "2631deceb66967c41a80ea75e8500d833311f1fafb2a87f8cd20d91fa5d06581"
+        },
+        {
+          "path": "upstream/sph/sph_types.h",
+          "bytes": 66236,
+          "sha256": "0a87bd456362fef5f39f1b3541e9e7ecfc0305be2ea89d804fd4e65585b19db9"
+        }
+      ]
+    },
+    "R02_CUBE2_TAIL_FUSION": {
+      "tree_sha256": "471780732feee86ab91d558641bf33f67f94e2adb384b40c3516bdc9348ef4f4",
+      "files": [
+        {
+          "path": "entry.cu",
+          "bytes": 27,
+          "sha256": "3c966fc71f24ed919c254b1216d849c0719a73a89ba615c587922deffe63f4a7"
+        },
+        {
+          "path": "generated/UPSTREAM_LICENSE.txt",
+          "bytes": 47399,
+          "sha256": "8387fb7fc6abf3fe03ccb3ae3229ce695fff02ac667d0105899d91f5cbd8fae2"
+        },
+        {
+          "path": "generated/cuda_helper.h",
+          "bytes": 20083,
+          "sha256": "3f518612b25422a7b7826262c574a68a30419731d40b08af58feae7629053798"
+        },
+        {
+          "path": "generated/cuda_lyra2_vectors.h",
+          "bytes": 23652,
+          "sha256": "4e8455b66219a2f7db6a2036b4b6588410189341986c9685053e87d525bdfc7c"
+        },
+        {
+          "path": "generated/upstream_blake.cuh",
+          "bytes": 15244,
+          "sha256": "190477a42d5176f5bb2e4617f93b62dfbc45675646ffd8af7cbedb7dc06ca243"
+        },
+        {
+          "path": "generated/upstream_bmw.cuh",
+          "bytes": 11108,
+          "sha256": "2eab9281329958cff3efce621216a37724186759c6d7b78e7ae67cdc7e9275d0"
+        },
+        {
+          "path": "generated/upstream_cube.cuh",
+          "bytes": 15459,
+          "sha256": "f8429d51c86c4246ab85b6abc90a403cd5d3b49499dca82a9ea4dc2492142ee3"
+        },
+        {
+          "path": "generated/upstream_lyra.cuh",
+          "bytes": 14493,
+          "sha256": "9531bea85d67a3861fdefd7d32352a20d7897d57a7baf9f62bdecadb925fd029"
+        },
+        {
+          "path": "generated/upstream_skein.cuh",
+          "bytes": 5699,
+          "sha256": "dfae30afa89c3fecc75f2621e4d958161b93315a426cd2249a83a4509d7c821f"
+        },
+        {
+          "path": "include/mona/core.hpp",
+          "bytes": 2244,
+          "sha256": "8447b66bf7f9bfbfc6a91ceb13c8647ae4f500000329e050a0790b9e5efd79f8"
+        },
+        {
+          "path": "include/mona/measured_defaults.hpp",
+          "bytes": 1342,
+          "sha256": "f46c55b1db854ffbb74a83bde9be771fdefb85ef69a137a8f40d45b358baf904"
+        },
+        {
+          "path": "src/cube.cuh",
+          "bytes": 1679,
+          "sha256": "cbdc8123d88e1e99b3e3c9f0782881002615e0c3b6f1381423e50ba14c4de6d6"
+        },
+        {
+          "path": "src/cuda_ops.cuh",
+          "bytes": 1676,
+          "sha256": "a1faf678183f4d8e73d84c5304da42fd7c0f3ba1d8526469d580cf3d02f585cc"
+        },
+        {
+          "path": "src/lane_constants.hpp",
+          "bytes": 844,
+          "sha256": "9536eb627eac2ad72d7424df657c89c05ac8dfdcf2882b4bee07f4dfe2588089"
+        },
+        {
+          "path": "src/lyra.cuh",
+          "bytes": 7999,
+          "sha256": "00ef11d54b27bd29a7ee21abf002d3b9c116f241f0032375be827ead9c069c58"
+        },
+        {
+          "path": "src/lyra_core.hpp",
+          "bytes": 6750,
+          "sha256": "f6fb7fab9bf1c1e86837f3ce35f2e8ed70d8d6b89fd1d94951fb67a0793e4086"
+        },
+        {
+          "path": "src/pipeline.cu",
+          "bytes": 13102,
+          "sha256": "9e41debe6816bc02f140d85823e7a24b319defbc45cacfb53fba411295047dc5"
+        },
+        {
+          "path": "src/r02_bridge.cuh",
+          "bytes": 2705,
+          "sha256": "f4b535e5332f2de627fba661cbdbd6bfe2d88ee58b75a12aee29fba9e50d9662"
+        },
+        {
+          "path": "src/r02_skein_registers.cuh",
+          "bytes": 2516,
+          "sha256": "b5613725b19aa8d82b917def6136b423b617d3f00ec77b99351edfbc08da00e8"
+        },
+        {
+          "path": "src/transpose4.hpp",
+          "bytes": 951,
+          "sha256": "8ff5719bd69b9bc94f5964107a5789fc8b0e30a983f962e019c4c402db3070a2"
+        },
+        {
+          "path": "upstream/sph/sph_blake.h",
+          "bytes": 10681,
+          "sha256": "2631deceb66967c41a80ea75e8500d833311f1fafb2a87f8cd20d91fa5d06581"
+        },
+        {
+          "path": "upstream/sph/sph_types.h",
+          "bytes": 66236,
+          "sha256": "0a87bd456362fef5f39f1b3541e9e7ecfc0305be2ea89d804fd4e65585b19db9"
+        }
+      ]
+    }
+  },
+  "sanitized_images": {
+    "N02_EXP01_PRODUCER.cubin": "9463bb3d1242371f7ebaef19aa528b63debeb6fdc2fc900f8f1a0d8e7d85ec19",
+    "R02_ACCEPTED.cubin": "c9a9a6872df92f529b88cf6a80eabb925b515c76a1c4a3791788a52afb7e8a84",
+    "R02_CUBE2_TAIL_FUSION.cubin": "84f3b1b105a7cb4df7dec50968e3ea81e2c4a0c97f83afe4872e413376f5e2bd"
+  },
+  "developer_destination": {
+    "policy": "public mining-only; single production location",
+    "path": "source/src/developer_destination.cpp"
+  },
+  "donation": "not shipping; obsolete option spellings only in negative tests",
+  "operational_note": {
+    "live_user_rejects": [
+      1,
+      1
+    ],
+    "diagnostic_user_submits": 355,
+    "diagnostic_user_accepts": 355,
+    "diagnostic_user_rejects": 0,
+    "release_blocker": false
+  },
+  "host_cli_compatibility": {
+    "scope": "v1-compatible USER CLI: -o/--url, -u/--user, -p/--pass",
+    "stdin_mode_retained": true,
+    "credential_mode_mix_rejected": true,
+    "frozen_backend_changed": false,
+    "scheduler_accounting_stratum_changed": false,
+    "developer_destination_changed": false,
+    "qualified_images_changed": false,
+    "device_sources_changed": false,
+    "released_executable_sha256": "9a3ffbe32924c5f227b90daf3bd55993de3e2a32c24b1f38f07cd90e752cb800",
+    "release_binary_requalification": "PASS_WINDOWS_MSVC_CPU_MOCK_GPU_CORRECTNESS_DIRECT_CLI_LIVE_PRIVACY",
+    "post_change_validation": {
+      "source_tag": "sm120-v2.0.1",
+      "platform": "Windows 11 x64 / MSVC 19.44 / CUDA 13.4.x / RTX 5090",
+      "helper_integrity_tests": "2/2 PASS",
+      "cpu_mock_ctest": "9/9 PASS",
+      "gpu_correctness_compares": 4232,
+      "gpu_correctness_canaries": "PASS",
+      "qualified_modules_loaded": 3,
+      "linked_payload_verification": "PASS",
+      "qualified_images_before_after": "UNCHANGED",
+      "console_short_and_default_interval_live": "PASS",
+      "diagnostic_json_live": "PASS",
+      "rebuild_executable_byte_match": "PASS",
+      "privacy": "PASS",
+      "scope_note": "Validation of the released v2.0.1 executable; not a new performance measurement. Rebuilt binaries require separate verification."
+    }
+  }
+}

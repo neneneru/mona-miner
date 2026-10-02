@@ -1,0 +1,15 @@
+Mona Miner v2 / SM120 NOTICE
+
+Mona Miner is derived from tpruvot/ccminer and distributed under
+GPL-3.0-or-later. Keep the repository root LICENSE.txt and existing third-party
+notices/licenses.
+
+Exact device-source trees corresponding to all three frozen modules are included
+under device-source/. Generated upstream fragments include UPSTREAM_LICENSE.txt.
+
+Qualified cubins under images/ were privacy-sanitized only in debug/source-path
+metadata and were revalidated after sanitization.
+
+The Developer destination is intentionally public mining-only authentication,
+centralized in source/src/developer_destination.cpp. No USER pool credential,
+Web-login, withdrawal, or wallet-control credential belongs in public source.
