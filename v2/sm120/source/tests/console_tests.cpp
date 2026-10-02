@@ -25,8 +25,8 @@ int main(){
             human.event(Authority::User,"READY",1);
             human.mining_started(2156.3256);
             human.event(Authority::Developer,"READY",1);
-            human.summary(412.12,4,0,256.0);
-            human.summary(413.00,5,0,256.0);
+            human.summary(412.12,4,0,2156.3256);
+            human.summary(413.00,5,0,2156.3256);
             human.reconnect_backoff(Authority::Developer,1000);
             human.line("{\"event\":\"INTERNAL_ONLY\"}");
         }
@@ -39,8 +39,8 @@ int main(){
         check(occurrences(h,"Stratum authorized")==1);
         check(occurrences(h,"Waiting for next pool job...")==1);
         check(h.find("Mining started | diff 2156.3256")!=std::string::npos);
-        check(h.find("412.12 MH/s | accepted: 4/4 (+4) | diff 256")!=std::string::npos);
-        check(h.find("413.00 MH/s | accepted: 5/5 (+1) | diff 256")!=std::string::npos);
+        check(h.find("412.12 MH/s | accepted: 4/4 (+4) | diff 2156.3256")!=std::string::npos);
+        check(h.find("413.00 MH/s | accepted: 5/5 (+1) | diff 2156.3256")!=std::string::npos);
         check(h.find("INTERNAL_ONLY")==std::string::npos);
         check(h.find("DEVELOPER")==std::string::npos);
         check(h.find("reconnecting")==std::string::npos);
