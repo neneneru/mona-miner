@@ -1,0 +1,57 @@
+# Mona Miner Public v2
+
+## 概要
+
+- Monacoin（Lyra2REv2）向けの CUDA 13.4 対応 NVIDIA CUDA マイナーです。
+- Public v2 は SM120 を対象とし、RTX 5090 で実機検証しています。
+- 固定 Developer Fee 2% を採用し、Donation はありません。
+
+## 対応環境
+
+- SM120（RTX 50 シリーズ）
+- 実機検証: RTX 5090 / Windows 11 x64
+- CUDA 13.4.x
+
+## 手数料
+
+- Developer Fee: 2%
+- Donation: なし
+- completed-work 基準で USER 98q → DEVFEE 2q（q = 64）を割り当てます。
+
+Developer Fee の未実行分を後からまとめて回収する debt / catch-up はありません。
+Developer 接続が利用できない場合も USER mining を継続し、復旧後に追加徴収しません。
+USER mining が利用できない場合は DEVFEE-only の GPU mining を継続しません。
+
+## パフォーマンス
+
+RTX 5090 の30分実プール検証では、2回の測定で以下を確認しています。
+
+- total: 423.778 / 426.614 MH/s
+- USER 実効: 415.352 / 418.114 MH/s
+- 代表値: 約 425 MH/s total / 約 417 MH/s USER 実効
+- Public v1 SM120 約395.93 MH/s比: total 約 +7.3%、USER 実効 約 +5.3%
+
+上記は実機検証した RTX 5090 とその検証環境における値です。
+すべての SM120 GPU で同一性能を保証するものではありません。
+
+## 主な改善内容
+
+Public v2 SM120 の frozen backend は以下の構成です。
+
+`N02 + EXP01 + R02_CUBE2_TAIL_FUSION_B64`
+
+主な方向性は、GPU処理ステージ間の境界削減、同一ownerで処理できる範囲の融合、
+不要な中間表現・転送の削減、counter-effect を抑えた tail fusion です。
+
+詳細な GPU image / source provenance、検証済みSHA256、正しさ試験、
+Compute Sanitizer、live-pool validation は [SM120 README](sm120/) を確認してください。
+
+## 共通ポリシー
+
+- 隠し / 予備プールへの接続、テレメトリ送信、自動更新確認はありません。
+- Mona Miner 自体は GPU の電力制限・電圧・クロック・ファン設定を変更しません。
+- USER pool の接続先・worker・password は利用者が指定します。
+
+## 収録
+
+- [SM120](sm120/)
