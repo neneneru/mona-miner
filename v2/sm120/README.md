@@ -54,8 +54,13 @@ mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS
 ```
 
 `-o / --url`、`-u / --user`、`-p / --pass` を使用できます。
-Release package の `start_vippool.bat` もこのCLIを直接使用し、USER worker /
-password をBATへ保存して繰り返し起動できます。
+`-p / --pass` の要否は接続先poolの仕様に従います。VIP Poolを利用する一般的な
+ケースではpasswordを指定します。
+
+Release package の `start_vippool.bat` はVIP Pool向けの便利な起動例です。
+BATの利用は必須ではなく、対応するStratum poolをCLIから指定して直接起動できます。
+BATへ保存したUSER worker / passwordは平文になるため、mining専用の認証情報を
+使用してください。
 
 `--credentials-stdin` は既存のvalidation / automation互換用として引き続き
 サポートしますが、通常利用では必須ではありません。CLI credential modeと

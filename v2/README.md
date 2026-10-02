@@ -54,8 +54,11 @@ Public v1 と同じ `-o / -u / -p` CLIでUSER poolを指定できます。
 mona-miner.exe -a lyra2v2 -o stratum+tcp://HOST:PORT -u USER -p PASS
 ```
 
-Release package では `start_vippool.bat` にUSER worker / passwordを設定して
-保存し、以後はBATから起動できます。
+`-p / --pass` の要否は接続先poolの仕様に従います。VIP Poolを利用する一般的な
+ケースではpasswordを指定します。
+
+Release package にはVIP Pool向けの起動例として `start_vippool.bat` を同梱します。
+BATの利用は必須ではなく、対応するStratum poolをCLIから指定して起動できます。
 
 ## 共通ポリシー
 
