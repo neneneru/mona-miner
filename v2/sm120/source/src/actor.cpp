@@ -158,7 +158,8 @@ namespace mona2 {
         log_.secret(c.password);
         log_.secret(c.worker);
         log_.secret(c.endpoint.canonical());
-        view_.store(std::make_shared<SessionView>());
+        std::shared_ptr<const SessionView> snapshot=std::make_shared<SessionView>();
+        std::atomic_store(&view_,std::move(snapshot));
     }
     SessionActor::~SessionActor(){
         if(thread_.joinable()){
@@ -191,7 +192,8 @@ namespace mona2 {
             v.ready=false;
             v.state=stopping?"STOPPING":"DEGRADED_BACKPRESSURE";
         }
-        view_.store(std::make_shared<SessionView>(std::move(v)));
+        std::shared_ptr<const SessionView> snapshot=std::make_shared<SessionView>(std::move(v));
+        std::atomic_store(&view_,std::move(snapshot));
         std::lock_guard l(counts_mu_);
         counts_=protocol_.counts();
     }

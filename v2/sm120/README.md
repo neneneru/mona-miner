@@ -2,7 +2,7 @@
 
 ## 概要
 
-- 現在のPublic v2 / SM120 releaseはv2.0.1です。
+- 現在のPublic v2 / SM120 releaseは [v2.1.0](https://github.com/neneneru/mona-miner/releases/tag/sm120-v2.1.0) です。
 - SM120（RTX 50 シリーズ）向けの Public v2 実装です。
 - RTX 5090 / Windows 11 x64 / CUDA 13.4.x で実機検証しています。
 - 固定 Developer Fee 2% を採用しています。
@@ -24,7 +24,14 @@ USER mining が利用できない場合は、DEVFEE-only のGPU miningを継続�
 
 ## 主な最適化
 
-Public v2 SM120 の最終構成は以下です。
+### v2.1.0
+
+- Lyra2の全4列をレジスタに置き、列を担当するCUDAレーン間のシャッフルを最適化しました。
+- 第2 CubeHashを含む後段のSkein、CubeHash、BMWを融合しました。
+- 3つのCUDAストリームに304,640 nonceずつ継続投入します。ジョブ、難易度、採掘ロールの切り替え前に投入済みの処理を回収します。
+- ジョブごとのN02 producer、2%のFee計算、既定の60秒集約表示を維持しています。
+
+### v2.0.1で使用した構成
 
 ```text
 N02 + EXP01 + R02_CUBE2_TAIL_FUSION_B64
@@ -41,7 +48,32 @@ Public v1からPublic v2への最終的な製品性能差や、各最適化の�
 
 ## パフォーマンス
 
-RTX 5090で30分の実プール検証を2回実施しています。
+### v2.1.0
+
+RTX 5090、440 W上限、オフラインで、v2.0.1構成を同じLLVM-MinGW環境で再ビルドしたものと試用版を比較しました。2,000標準バッチ相当の処理を4組比べた結果です。
+
+| 構成 | ハッシュレート中央値 |
+| --- | ---: |
+| v2.0.1構成 | 418.01 MH/s |
+| v2.1.0と同じGPU構成の試用版 | 458.88 MH/s |
+
+各組の速度比の中央値は **+9.76%** でした。
+
+実プールの短時間確認では、difficulty 256で60秒表示8件の中央値が約461 MH/s、範囲が451.41〜466.02 MH/sでした。最終表示は46/46 accepted、GPU電力の画面表示は438 Wでした。
+
+### RTX 5090 / 約440 Wでの過去実績との参考比較
+
+短時間確認の中央値461.33 MH/sを、過去の代表値から換算しました。測定時間やビルド条件が異なる実測値を用いた参考比較です。
+
+| 比較対象 | ハッシュレート | 参考差 |
+| --- | ---: | ---: |
+| 旧CUDA 10参照ccminer | 約330 MH/s | 約+39.8% |
+| Public v1 / SM120 | 約395.93 MH/s | 約+16.5% |
+| Public v2.0.1 / SM120 | 約425 MH/s | 約+8.5% |
+
+### v2.0.1の30分実プール検証
+
+RTX 5090で30分の実プール検証を2回実施した結果です。
 
 | 測定 | Total MH/s | USER実効 MH/s | Fee work | 平均ボード電力 | MH/J |
 |---|---:|---:|---:|---:|---:|
@@ -54,6 +86,13 @@ Public v1 SM120 約395.93 MH/s比では、total 約 +7.3%、USER実効 約 +5.3%
 上記はRTX 5090と検証環境における実測値であり、すべてのSM120 GPUで同一性能を保証するものではありません。
 
 ## 検証済みGPUイメージ / ソース
+
+Public v2.1.0で使用するcubinは以下の2本です。
+
+- N02_EXP01_PRODUCER: `9463bb3d1242371f7ebaef19aa528b63debeb6fdc2fc900f8f1a0d8e7d85ec19`
+- V210_LYRA_REGISTER: `ad2bd0a1adf7f1921ec157caeae10f93dbdfee2d57971093f64118e0cf605c8e`
+
+V210_LYRA_REGISTERは公開device sourceを起点に [性能検証用のビルドスクリプト](build-tools/performance/) から生成します。
 
 Public v2.0.1の検証済みcubinは以下の3本です。
 
@@ -92,14 +131,14 @@ Developer Feeの接続先認証情報は、公開前提のmining専用情報と�
 Public v2ではDeveloper Feeを1行だけ追加表示します。
 
 ```text
-[YYYY-MM-DD HH:MM:SS] Mona Miner - Lyra2REv2
+[YYYY-MM-DD HH:MM:SS] Mona Miner v2.1.0 - Lyra2REv2
 [YYYY-MM-DD HH:MM:SS] Pool: stratum+tcp://HOST:PORT
 [YYYY-MM-DD HH:MM:SS] GPU #0: NVIDIA GeForce RTX 5090, SM 12.0
 [YYYY-MM-DD HH:MM:SS] Developer Fee: 2%
 [YYYY-MM-DD HH:MM:SS] Stratum authorized
 [YYYY-MM-DD HH:MM:SS] Waiting for next pool job...
-[YYYY-MM-DD HH:MM:SS] Mining started | diff 2156.3256
-[YYYY-MM-DD HH:MM:SS] 425.00 MH/s | accepted: 4/4 (+4) | diff 2156.3256
+[YYYY-MM-DD HH:MM:SS] Mining started | diff 256
+[YYYY-MM-DD HH:MM:SS] 461.25 MH/s | accepted: 46/46 (+5) | diff 256
 ```
 
 認証後に次のpool jobを待っている場合は待機状態を表示し、採掘開始時に
@@ -115,7 +154,16 @@ poolから指定されたdifficultyを表示します。
 
 ## 検証
 
-Public v2のGPU構成は、正しさ試験とCompute Sanitizerの
+### v2.1.0
+
+- Windows x64ビルド、CPU/mock CTest 9件、image-object helper 2件。
+- RTX 5090でCUDA Graphの再利用、target変更、nonce上限、GPUバッファ境界、候補上限超過時の再試行を照合。
+- ローカルの模擬StratumでUSERとDeveloperの認証・提出、ジョブと難易度の切り替え、完了workの98対2の配分を確認。
+- 試用版で実プールの短時間確認。
+
+### v2.0.1までの検証
+
+v2.0.1までのGPU構成は、正しさ試験とCompute Sanitizerの
 memcheck / racecheck / initcheck / synccheckで検証しています。
 制御されたローカルGPU比較では、USER専用実行に対するDeveloper Fee専用実行の
 total throughputの対応比較中央値差は約 -0.006%でした。
@@ -132,6 +180,12 @@ DEVFEE rejection、local stale、UNKNOWN、not-sentはありませんでした�
 再現性のあるminer defectやrelease blockerとは分類していません。
 
 ## ソース / Release同一性
+
+### Public v2.1.0
+
+公開ソースは [`sm120-v2.1.0`](https://github.com/neneneru/mona-miner/tree/sm120-v2.1.0/v2/sm120)、
+配布ZIPとSHA256は [Releaseページ](https://github.com/neneneru/mona-miner/releases/tag/sm120-v2.1.0) に掲載しています。
+GPUイメージと配布物の対応は `V2.1.0_SOURCE_SCOPE.json` を参照してください。
 
 ### Public v2.0.1
 
@@ -150,6 +204,9 @@ Release実行ファイル SHA256:
 
 ## Public GPUビルド
 
+v2.1.0は [現行のビルド手順](build-tools/README.md#v210-sm120-gpu-ビルド) を使用します。
+
+v2.0.1構成では、
 公開リポジトリのqualified cubin 3本からimage objectを生成し、
 GPU executableをbuildする手順は [build-tools/README.md](build-tools/README.md) に記載しています。
 

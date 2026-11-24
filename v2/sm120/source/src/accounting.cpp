@@ -3,8 +3,9 @@
 #include <algorithm>
 #include <sstream>
 namespace mona2 {
-    QuotaFrame::QuotaFrame(std::uint32_t b):batch_(b),quantum_(std::uint64_t(b)*64){
-        require(b>0&&b<=NativeBatch*2u,"QUOTA_CONFIG");
+    QuotaFrame::QuotaFrame(std::uint32_t fee_batch,std::uint32_t max_assignment):
+        max_assignment_(max_assignment?max_assignment:fee_batch),quantum_(std::uint64_t(fee_batch)*64){
+        require(fee_batch>0&&fee_batch<=NativeBatch*2u&&max_assignment_<=MaxScanWindow,"QUOTA_CONFIG");
     }
     void QuotaFrame::close_segment(){
         if(available_){
@@ -33,10 +34,10 @@ namespace mona2 {
     std::optional<QuotaChoice> QuotaFrame::choose(bool u,bool d,std::uint64_t n){
         availability(u,d);
         if(!u||n==0)return std::nullopt;
-        auto r=available_?remaining_:std::uint64_t(batch_);
+        auto r=available_?remaining_:std::uint64_t(max_assignment_);
         return QuotaChoice{
             available_?phase_:Role::User,std::uint32_t(std::min({
-                std::uint64_t(batch_),r,n
+                std::uint64_t(max_assignment_),r,n
             }
             )),available_?segment_:0
         };
@@ -58,7 +59,7 @@ namespace mona2 {
         counts_.actual[index(r)]+=Count(n);
     }
     void QuotaFrame::commit(Role r,std::uint64_t n,std::uint64_t segment){
-        require(n>0&&n<=batch_,"COMMIT_SIZE");
+        require(n>0&&n<=max_assignment_,"COMMIT_SIZE");
         auto updated=counts_.committed[index(r)]+Count(n);
         if(segment){
             require(available_&&segment==segment_&&r==phase_&&n<=remaining_,"COMMIT_PHASE");
@@ -136,8 +137,9 @@ namespace mona2 {
         size_=0;
         return n;
     }
-    RangeTransaction::RangeTransaction(Assignment a):assignment_(std::move(a)),cursor_(assignment_.first){
-        require(assignment_.work&&assignment_.count>0&&assignment_.count<=NativeBatch&&std::uint64_t(assignment_.first)+assignment_.count<=NonceSpace,"ASSIGNMENT_RANGE");
+    RangeTransaction::RangeTransaction(Assignment a,std::uint32_t max_count):assignment_(std::move(a)),cursor_(assignment_.first){
+        require(max_count<=MaxScanWindow&&assignment_.work&&assignment_.count>0&&assignment_.count<=max_count&&
+                std::uint64_t(assignment_.first)+assignment_.count<=NonceSpace,"ASSIGNMENT_RANGE");
         require(origin(assignment_.role)==assignment_.work->key.session.authority,"ASSIGNMENT_AUTHORITY");
         pending_.emplace_back(assignment_.first,assignment_.count);
     }
@@ -159,6 +161,7 @@ namespace mona2 {
         auto [first,n]=pending_.back();
         pending_.pop_back();
         require(first==cursor_,"RANGE_NOT_CONTIGUOUS");
+        require(n<=b.max_scan_count(),"SCAN_EXCEEDS_BACKEND_LIMIT");
         auto raw=b.scan(first,n,assignment_.work->target);
         q.actual(assignment_.role,n);
         require(raw.total<=n&&raw.overflow<=1&&bool(raw.overflow)==(raw.total>MaxCandidates),"GPU_HIT_HEADER_CONTRACT");

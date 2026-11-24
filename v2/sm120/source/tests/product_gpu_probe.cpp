@@ -3,7 +3,11 @@
 // and dummy credentials. USER-only control is created by withholding the mock
 // Developer job, not by a shipping fee-disable option or different backend.
 #include "mona2/worker.hpp"
+#ifdef MONA2_PERFORMANCE_PREVIEW
+#include "mona2/preview_backend.hpp"
+#else
 #include "mona2/frozen_backend.hpp"
+#endif
 #include <iostream>
 using namespace mona2;
 int main(int argc,char**argv){
@@ -20,7 +24,11 @@ int main(int argc,char**argv){
         std::atomic<bool> done{
             false
         };
+#ifdef MONA2_PERFORMANCE_PREVIEW
+        PreviewBackend gpu(device);
+#else
         FrozenBackend gpu(device);
+#endif
         log.line(gpu.identity());
         Credentials uc{
             endpoint("stratum+tcp://127.0.0.1:"+std::to_string(pu)),"mock-user-alpha","user-dummy-only"
@@ -60,6 +68,10 @@ int main(int argc,char**argv){
         ),"PRODUCT_PROBE_FEE_MISSING");
         else require(cc[1]==Count{}
         ,"PRODUCT_PROBE_CONTROL_ROLE");
+#ifdef MONA2_PERFORMANCE_PREVIEW
+        if(mode=="DEVFEE_ONLY_FSA")
+            require(cc[1]==Count(std::uint64_t(NativeBatch)*128),"PRODUCT_PROBE_PREVIEW_FEE_FRACTION");
+#endif
         require(io_stats().dns==0,"PRODUCT_PROBE_EXTERNAL_DNS");
         std::cout<<"{\"status\":\"PASS\",\"kind\":\"PRODUCT_LOCALHOST_GPU_HARNESS\",\"mode\":"<<json_quote(mode)<<",\"main_work_per_visit\":8589934592,\"warmup_separate\":268435456,\"connections_user\":"<<u.counts().connects<<",\"connections_developer\":"<<d.counts().connects<<",\"GPU_event_active_duration\":null,\"external_network\":false,\"GPU\":"<<gpu.accounting()<<"}\n";
         return 0;

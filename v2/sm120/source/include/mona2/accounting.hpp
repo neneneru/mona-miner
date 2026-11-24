@@ -3,6 +3,7 @@
 #include "base.hpp"
 #include <functional>
 namespace mona2 {
+    inline constexpr std::uint32_t MaxScanWindow=8*NativeBatch;
     struct WorkCounters {
         std::array<Count,RoleCount> scheduled{}
         ,actual{}
@@ -16,7 +17,7 @@ namespace mona2 {
         std::uint64_t segment;
     };
     class QuotaFrame {
-        std::uint32_t batch_;
+        std::uint32_t max_assignment_;
         std::uint64_t quantum_;
         bool available_=false;
         Role phase_=Role::User;
@@ -26,7 +27,7 @@ namespace mona2 {
         void close_segment();
         void next_phase();
         public:
-        explicit QuotaFrame(std::uint32_t batch=NativeBatch);
+        explicit QuotaFrame(std::uint32_t fee_batch=NativeBatch,std::uint32_t max_assignment=0);
         void availability(bool user,bool developer);
         std::optional<QuotaChoice> choose(bool user,bool developer,std::uint64_t nonce_remaining);
         void scheduled(Role,std::uint64_t);
@@ -64,6 +65,7 @@ namespace mona2 {
         virtual ~Backend()=default;
         virtual void install(const Work&)=0;
         virtual RawHits scan(std::uint32_t first,std::uint32_t count,const Target& target,bool debug=false)=0;
+        virtual std::uint32_t max_scan_count()const noexcept{return NativeBatch;}
         virtual std::vector<std::uint64_t> pre_bmw(std::uint32_t){
             throw Error("DEBUG_UNAVAILABLE");
         }
@@ -112,7 +114,7 @@ namespace mona2 {
         std::uint64_t cursor_=0;
         bool done_=false;
         public:
-        explicit RangeTransaction(Assignment a);
+        explicit RangeTransaction(Assignment a,std::uint32_t max_count=NativeBatch);
         RangeResult step(Backend&,Mailbox&,QuotaFrame&,const std::function<bool()>& may_launch,
         const std::function<Target(const Words&,std::uint32_t)>& oracle);
         bool done()const{

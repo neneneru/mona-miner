@@ -12,6 +12,13 @@
 #include <ws2tcpip.h>
 #include <mstcpip.h>
 #include <windows.h>
+#ifdef __MINGW32__
+// The MinGW import library exports these Windows APIs without declarations.
+extern "C" {
+    WINSOCK_API_LINKAGE INT WSAAPI GetAddrInfoExCancel(LPHANDLE);
+    WINSOCK_API_LINKAGE INT WSAAPI GetAddrInfoExOverlappedResult(LPOVERLAPPED);
+}
+#endif
 #else
 #include <arpa/inet.h>
 #include <sys/socket.h>

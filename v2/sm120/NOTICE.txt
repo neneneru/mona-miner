@@ -4,8 +4,11 @@ Mona Miner is derived from tpruvot/ccminer and distributed under
 GPL-3.0-or-later. Keep the repository root LICENSE.txt and existing third-party
 notices/licenses.
 
-Exact device-source trees corresponding to all three frozen modules are included
-under device-source/. Generated upstream fragments include UPSTREAM_LICENSE.txt.
+The source trees for the v2.0.1 modules are included under device-source/.
+Version 2.1.0 uses the N02 producer and V210_LYRA_REGISTER. The latter is built
+from the public device source with build-tools/performance/build_lyra_fusion.py
+and the --lyra-instructions option. Generated upstream fragments include
+UPSTREAM_LICENSE.txt.
 
 Qualified cubins under images/ were privacy-sanitized only in debug/source-path
 metadata and were revalidated after sanitization.

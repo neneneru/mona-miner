@@ -37,7 +37,7 @@ namespace mona2 {
         std::atomic<bool>&producer_done_;
         AuditLog&log_;
         bool loopback_,all_;
-        std::atomic<std::shared_ptr<const SessionView>> view_;
+        std::shared_ptr<const SessionView> view_;
         mutable std::mutex counts_mu_;
         NetworkCounts counts_{};
         std::jthread thread_;
@@ -51,7 +51,7 @@ namespace mona2 {
         void join();
         void finalize_queue();
         std::shared_ptr<const SessionView> view()const{
-            return view_.load();
+            return std::atomic_load(&view_);
         }
         Mailbox&mailbox(){
             return mailbox_;

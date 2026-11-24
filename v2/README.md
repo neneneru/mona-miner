@@ -2,7 +2,7 @@
 
 ## 概要
 
-- 現在のPublic v2 releaseはv2.0.1です。
+- 現在のPublic v2 releaseは [v2.1.0](https://github.com/neneneru/mona-miner/releases/tag/sm120-v2.1.0) です。
 - Monacoin（Lyra2REv2）向けの CUDA 13.4 対応 NVIDIA CUDA マイナーです。
 - Public v2 は SM120 を対象とし、RTX 5090 で実機検証しています。
 - 固定 Developer Fee 2% を採用しています。
@@ -24,7 +24,11 @@ USER mining が利用できない場合は DEVFEE-only の GPU mining を継続�
 
 ## パフォーマンス
 
-RTX 5090 の30分実プール検証では、2回の測定で以下を確認しています。
+RTX 5090 / 440 W上限で、同じツールチェーンでビルドしたv2.0.1構成とのオフライン比較では、ハッシュレート中央値が **418.01 → 458.88 MH/s**、対応比の中央値が **+9.76%** でした。
+
+実プールの短時間確認では、difficulty 256で60秒表示8件の中央値が約461 MH/s、最終表示が46/46 acceptedでした。
+
+v2.0.1の30分実プール検証では、2回の測定で以下を確認しています。
 
 - total: 423.778 / 426.614 MH/s
 - USER 実効: 415.352 / 418.114 MH/s
@@ -36,15 +40,11 @@ RTX 5090 の30分実プール検証では、2回の測定で以下を確認し�
 
 ## 主な最適化
 
-Public v2 SM120 の最終構成は以下です。
+- Lyra2の行列をレジスタに置き、列を担当するCUDAレーン間の受け渡しを見直しました。
+- 後段のSkein、CubeHash、BMWを1つのカーネルにまとめました。
+- 3つのCUDAストリームに304,640 nonceずつ継続投入し、同じジョブの処理を重ねます。
 
-`N02 + EXP01 + R02_CUBE2_TAIL_FUSION_B64`
-
-GPU処理ステージ間の境界削減、同じ処理主体で完結できる範囲の融合、
-不要な中間表現・転送の削減、後段tail処理の融合を行っています。
-
-詳細なGPU image / source provenance、検証済みSHA256、正しさ試験、
-Compute Sanitizer、実プール検証は [SM120 README](sm120/) を確認してください。
+GPUイメージの来歴、SHA256、検証条件は [SM120 README](sm120/) を確認してください。
 
 ## 起動
 

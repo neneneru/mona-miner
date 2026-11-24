@@ -62,7 +62,7 @@ namespace mona2 {
             };
             quota_.scheduled(assignment.role,assignment.count);
             ++metrics_.assignments;
-            RangeTransaction transaction(assignment);
+            RangeTransaction transaction(assignment,backend_.max_scan_count());
             auto admissible=[&](){
                 if(stop_.requested())return false;
                 auto user=user_.view();

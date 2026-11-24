@@ -1,5 +1,50 @@
 # Public SM120 GPU executable build
 
+## v2.1.0 SM120 GPU ビルド
+
+配布版はWindows x64、CUDA SDK 13.4.x、LLVM-MinGW 20261117（Clang 23.1.6 / UCRT）でビルドしました。
+Python 3.10以上、CMake 3.26以上、NinjaとLLVM-MinGWの `bin/` をPATHに追加して、リポジトリrootから実行します。
+
+```powershell
+$repo = (Resolve-Path '.').Path.Replace('\', '/')
+$sm120 = "$repo/v2/sm120"
+$build = "$sm120/build/public-v210"
+$images = "$build/images"
+$cudaSdk = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.4'
+
+python -B "$sm120/build-tools/embed_images.py" --output "$images/mona2_images.obj"
+if ($LASTEXITCODE -ne 0) { throw 'v2.0.1 image generation failed' }
+python -B "$sm120/build-tools/performance/embed_preview.py" --out $images
+if ($LASTEXITCODE -ne 0) { throw 'v2.1.0 image generation failed' }
+
+cmake -S "$sm120/source" -B $build -G Ninja `
+  -DCMAKE_BUILD_TYPE=Release `
+  -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang.exe `
+  -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++.exe `
+  "-DCMAKE_C_FLAGS=-ffile-prefix-map=$repo=." `
+  "-DCMAKE_CXX_FLAGS=-ffile-prefix-map=$repo=." `
+  "-DCMAKE_EXE_LINKER_FLAGS=-static -Wl,--no-insert-timestamp" `
+  -DMONA2_FROZEN_GPU=ON "-DMONA2_CUDA_ROOT=$cudaSdk" `
+  "-DMONA2_IMAGE_OBJECT=$images/mona2_images.obj" `
+  "-DMONA2_GENERATED_INCLUDE=$sm120/source/include" `
+  "-DMONA2_PREVIEW_IMAGE_OBJECT=$images/mona2_preview.obj" `
+  "-DMONA2_PREVIEW_INCLUDE=$images"
+if ($LASTEXITCODE -ne 0) { throw 'configure failed' }
+
+cmake --build $build --parallel
+if ($LASTEXITCODE -ne 0) { throw 'build failed' }
+ctest --test-dir $build --output-on-failure
+if ($LASTEXITCODE -ne 0) { throw 'CPU/mock tests failed' }
+python -B "$sm120/build-tools/performance/embed_preview.py" --out $images --verify-only `
+  --executable "$build/mona-miner-sm120-v210.exe"
+if ($LASTEXITCODE -ne 0) { throw 'image verification failed' }
+```
+
+`mona-miner-sm120-v210.exe` がv2.1.0の出力です。組み込む `V210_LYRA_REGISTER.cubin` の再生成と
+検証は [性能検証用の手順](performance/README.md#windows実機確認用ビルド) を参照してください。
+
+## v2.0.1構成の再ビルド
+
 Windows x64 / Python 3.10以上 / Visual Studio 2022 C++ Build Tools / CMake 3.26以上 /
 CUDA SDK 13.4.xを使用します。CMake、PythonをPATHへ設定してください。
 GPU executableのbuild自体にはGPUやpool credentialsは不要です。

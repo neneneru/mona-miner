@@ -52,7 +52,7 @@ namespace mona2 {
         int device_;
         unsigned interval_;
         public:
-        GpuWorker(Backend&b,SessionActor&u,SessionActor&d,ShareBudget&budget,StopSignal&s,AuditLog&l,int device,unsigned interval=60):backend_(b),user_(u),developer_(d),budget_(budget),stop_(s),log_(l),quota_(),device_(device),interval_(interval){}
+        GpuWorker(Backend&b,SessionActor&u,SessionActor&d,ShareBudget&budget,StopSignal&s,AuditLog&l,int device,unsigned interval=60):backend_(b),user_(u),developer_(d),budget_(budget),stop_(s),log_(l),quota_(NativeBatch,b.max_scan_count()),device_(device),interval_(interval){}
         void run(std::optional<Time> until=std::nullopt,std::optional<std::uint64_t> validation_work_limit=std::nullopt);
         const QuotaFrame&quota()const{
             return quota_;
